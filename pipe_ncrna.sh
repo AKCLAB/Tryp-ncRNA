@@ -1,18 +1,18 @@
 #!/bin/bash
 # Function to display usage information
 usage() {
-    echo "Usage: $0 -dir_list <file> -output <path> -threads <number> -fasta <file> -gff <file> -utr5 <file> -utr3 <file>"
+    echo "Usage: $0 -dir_list <file> -output <path> -threads <number> -reffasta <file> -refgff <file> -utr5 <file> -utr3 <file>"
     echo "  -dir_list: File containing a list of directories to process"
     echo "  -output_base: Base directory where outputs will be stored"
     echo "  -threads: Number of threads to use"
-    echo "  -fasta: Reference genome FASTA file"
-    echo "  -gff: Annotation GFF file"
+    echo "  -reffasta: Reference genome FASTA file"
+    echo "  -refgff: Annotation GFF file"
     echo "  -utr5: Annotation file for 5' UTRs (optional)"
     echo "  -utr3: Annotation file for 3' UTRs (optional)"
     exit 1
 }
 
-#bash pipe_ncrna.sh -dir_list listdir.txt -output /home/raquelh/noncodingRNA/ -threads 20 -fasta TriTrypDB-30_LbraziliensisMHOMBR75M2903_Genome.fasta -gff TriTrypDB-30_LbraziliensisMHOMBR75M2903.gff -utr5 UTRme_fiveutr.tsv -utr3 UTRme_threeutr.tsv
+#bash pipe_ncrna.sh -dir_list listdir.txt -output /home/raquelh/noncodingRNA/ -threads 20 -reffasta TriTrypDB-30_LbraziliensisMHOMBR75M2903_Genome.fasta -refgff TriTrypDB-30_LbraziliensisMHOMBR75M2903.gff -utr5 UTRme_fiveutr.tsv -utr3 UTRme_threeutr.tsv
 #bash pipe_ncrna.sh -dir_list /home/raquelh/noncodingRNA/pro -output /home/raquelh/noncodingRNA/pro_out -threads 20 -fasta TriTrypDB-30_LbraziliensisMHOMBR75M2903_Genome.fasta -gff TriTrypDB-30_LbraziliensisMHOMBR75M2903.gff  -utr5 UTRme_fiveutr.tsv -utr3 UTRme_threeutr.tsv
 
 # Parse command-line arguments
@@ -34,12 +34,12 @@ while [[ $# -gt 0 ]]; do
         shift
         shift
         ;;
-        -fasta)
+        -reffasta)
         fasta="$2"
         shift
         shift
         ;;
-        -gff)
+        -refgff)
         gff="$2"
         shift
         shift
@@ -177,7 +177,7 @@ while IFS= read -r subdir; do
     echo "Identify ncRNA and lncRNA done successfully"
 
     echo "Running 4_annotation_ncRNA_lncRNA.py script"
-    # Call 5_annotation_ncRNA_lncRNA.py script
+    # Call 4_annotation_ncRNA_lncRNA.py script
     python3 4_annotation_ncRNA_lncRNA.py "${output_folder}/possible_ncRNA.txt" "${output_folder}/possible_lncRNA.txt" "$gff" "${output_folder}/annotation_ncRNA.txt" "${output_folder}/annotation_lncRNA.txt"
     #merge of cycle change
     echo "Position annnotation of ncRNA and lncRNA"
