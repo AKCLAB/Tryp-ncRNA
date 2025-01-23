@@ -1,0 +1,3 @@
+/home/raquelh/noncodingRNA/pro
+/home/raquelh/noncodingRNA/ama
+/home/raquelh/noncodingRNA/meta
