@@ -1,0 +1,70 @@
+
+
+#Description of pipeline
+
+```
+ pipe_ncrna.sh -dir_list <file> -output <path> -threads <number> -reffasta <file> -refgff <file> -utr5 <file> -utr3 <file>"
+```
+ -dir_list: File containing a list of directories to process containig the fastq files
+ -output_base: Base directory where outputs will be stored
+ -threads: Number of threads to use
+ -fasta: Reference genome FASTA file
+ -gff: Annotation GFF file
+ -utr5: Annotation file for 5' UTRs (optional)
+ -utr3: Annotation file for 3' UTRs (optional)
+  
+ listdir.txt format 
+ 
+  
+ ## First steps of pipeline
+  Confer or create index of reference file;
+  Confere or create directory with input files from listdir.txt 
+  
+ ## Loop by directory 
+  Confere or create output directory "_out"
+  create name_samples, list with all name samples
+  Confer or run the mapping, sort and index of each samples against the reference genome
+  Merge all biological repetions by sample using picard
+  Count the coverage by base 
+
+  Call 2_identify_transcript.py script
+  To identify in all positions of chromossomes with a coverage of 50 or 100 reads for strand + and negative strand
+  python3 2_identify_transcript.py "${output_folder}/count_igv.wig" "$output_folder" -threshold 100,50
+
+  Call 3_identify_possible_ncRNA_lncRNA.py script
+  To identify large noncoding RNA (>200pb) with >= 50 of coverage and small non-coding RNA (<200 pb) with  >= 100 of coverage) 
+  python3 3_identify_possible_ncRNA_lncRNA.py "${output_folder}/transcript_100cov.txt" "${output_folder}/transcript_50cov.txt" "${output_folder}/possible_ncRNA.txt" "${output_folder}/possible_lncRNA.txt"
+
+  Call 4_annotation_ncRNA_lncRNA.py script
+  To identify the location in coding or intergenic regions of non-coding RNA 
+  python3 4_annotation_ncRNA_lncRNA.py "${output_folder}/possible_ncRNA.txt" "${output_folder}/possible_lncRNA.txt" "$gff" "${output_folder}/annotation_ncRNA.txt" "${output_folder}/annotation_lncRNA.txt"
+
+  Call 5_identify_overlap_nc-lncRNA.py script
+  To identify small non-coding overlapping large non-coding RNA
+  python3 5_identify_overlap_nc-lncRNA.py "${output_folder}/annotation_ncRNA.txt" "${output_folder}/annotation_lncRNA.txt" "${output_folder}/annotation_ncRNA_final.txt"
+
+  Call 6_identify_ptu.py script
+  To identify PTU regions 
+  python3 6_identify_ptu.py "$gff" possible_ptu.txt
+
+  Call 7_parser_UTR_sense_antisense.py script
+  To add information of sense of non-coding RNA in relation from PTUs, and overlapping of non-coding RNA in UTR regions.
+  python3 7_parser_UTR_sense_antisense.py "${output_folder}/annotation_ncRNA_final.txt" "${output_folder}/annotation_lncRNA.txt" possible_ptu.txt "${output_folder}/ncRNAs_location_direction.bed" "$utr5" "$utr3"
+
+  To extract fasta sequences of all non-coding RNA
+  bedtools getfasta -fi "$fasta" -bed "${output_folder}/ncRNAs_location_direction.bed" -fo "${output_folder}/all_ncrna.fasta" -name+
+
+  blast between non-coding RNA and pfam proteins
+  diamond blastx --query "${output_folder}/all_ncrna.fasta" --db /home/raquelh/database/pfam_database.dmnd --out "${output_folder}/ncrna_pfam-cov80-max1.tab" --outfmt 6 qseqid sseqid pident qcovhsp length qlen slen qstart qend sstart send evalue bitscore stitle --id 90 --query-cover 80 --evalue 1e-5 --threads "$threads" --max-target-seqs 1
+  
+  Call 8_filterpfam.py script  
+  Filter non coding RNA with pfam proteins
+  python3 8_filterpfam.py "${output_folder}/ncrna_pfam-cov80-max1.tab" "${output_folder}/header_to_remove.tsv" "${output_folder}/all_ncrna.fasta" "${output_folder}/filtered_pfam.fasta"
+
+  Call 9_select_ncrna.py script
+  Selection of the non-coding RNA by each directory
+  python3 9_select_ncrna.py "${output_folder}/ncRNAs_location_direction.bed" "${output_folder}/header_to_remove.tsv" "${output_folder}/final_ncRNAs_location_direction.bed"
+  
+  ## Last steps of pipeline
+  Merge, sort all non-coding RNA from each directory
+  To create gff and bed format output files 
