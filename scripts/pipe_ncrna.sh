@@ -13,8 +13,8 @@ usage() {
     exit 1
 }
 
-#bash pipe_ncrna.sh -dir_list listdir.txt -output /path/to/TriTry-ncRNA -db /path/to/TriTry-ncRNA/db -threads 20 -reffasta TriTrypDB-30_LbraziliensisMHOMBR75M2903_Genome.fasta -refgff TriTrypDB-30_LbraziliensisMHOMBR75M2903.gff -utr5 UTRme_fiveutr.tsv -utr3 UTRme_threeutr.tsv
-#bash pipe_ncrna.sh -dir_list /path/to/TriTry-ncRNA/pro -output /path/to/TriTry-ncRNA/pro_out -db -threads 20 -fasta TriTrypDB-30_LbraziliensisMHOMBR75M2903_Genome.fasta -gff TriTrypDB-30_LbraziliensisMHOMBR75M2903.gff  -utr5 UTRme_fiveutr.tsv -utr3 UTRme_threeutr.tsv
+#bash pipe_ncrna.sh -dir_list listdir.txt -output /path/to/TriTry-ncRNA -db /path/to/TriTry-ncRNA/db -threads 20 -reffasta /path/to/work/TriTrypDB-30_LbraziliensisMHOMBR75M2903_Genome.fasta -refgff /path/to/work/TriTrypDB-30_LbraziliensisMHOMBR75M2903.gff -utr5 /path/to/work/UTRme_fiveutr.tsv -utr3 /path/to/work/UTRme_threeutr.tsv
+#bash pipe_ncrna.sh -dir_list /path/to/TriTry-ncRNA/pro -output /path/to/TriTry-ncRNA/pro_out -db -threads 20 -fasta /path/to/work/TriTrypDB-30_LbraziliensisMHOMBR75M2903_Genome.fasta -gff /path/to/work/TriTrypDB-30_LbraziliensisMHOMBR75M2903.gff  -utr5 /path/to/work/UTRme_fiveutr.tsv -utr3 /path/to/work/UTRme_threeutr.tsv
 
 # Parse command-line arguments
 while [[ $# -gt 0 ]]; do
@@ -91,6 +91,16 @@ if ! ls "$ref_name"*.bt2 1> /dev/null 2>&1; then
 else
     echo "BT2 files found, skipping bowtie-build"
 fi
+
+echo "Verify the Pfam database"
+if [ ! -f "$database/pfam_database.dmnd" ]; then
+    mkdir -p "$database"
+    wget -O "$database/Pfam-A.fasta.gz" https://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.fasta.gz
+    gunzip -c "$database/Pfam-A.fasta.gz" > "$database/Pfam-A.fasta"
+    makeblastdb -in "$database/Pfam-A.fasta" -dbtype prot -out "$database/pfam_database"
+    rm "$database/Pfam-A.fasta.gz"
+fi
+echo "Pfam database created successfully"
 
 # Process each directory listed in the input file
 while IFS= read -r subdir; do
@@ -239,8 +249,8 @@ done
 echo "${allstages}" #Print the concatenated result
 
 
-cat ${allstages} > final_all_ncrna.bed
-sort -k1,1 -k2,2n final_all_ncrna.bed > sorted_all_ncRNA.bed
-bedtools merge -i sorted_all_ncRNA.bed -s -c 4,6,7,8,9,10 -o distinct,distinct,distinct,distinct,distinct,distinct > unique_sort_allncrna.tab
+cat ${allstages} > "${output_base}/final_all_ncrna.bed"
+sort -k1,1 -k2,2n "${output_base}/final_all_ncrna.bed" > "${output_base}/sorted_all_ncRNA.bed"
+bedtools merge -i "${output_base}/sorted_all_ncRNA.bed" -s -c 4,6,7,8,9,10 -o distinct,distinct,distinct,distinct,distinct,distinct > "${output_base}/unique_sort_allncrna.tab"
 
-python3 10_remake_output.py unique_sort_allncrna.tab df_allncrna.tab df_allncrna.bed df_allncrna.gff
+python3 10_remake_output.py "${output_base}/unique_sort_allncrna.tab" "${output_base}/df_allncrna.tab" "${output_base}/df_allncrna.bed df_allncrna.gff"'

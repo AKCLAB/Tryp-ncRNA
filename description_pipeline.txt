@@ -3,10 +3,11 @@
 #Description of pipeline
 
 ```
- pipe_ncrna.sh -dir_list <file> -output <path> -threads <number> -reffasta <file> -refgff <file> -utr5 <file> -utr3 <file>"
+ pipe_ncrna.sh -dir_list <file> -output <path> -db <path> -threads <number> -reffasta <file> -refgff <file> -utr5 <file> -utr3 <file>"
 ```
  -dir_list: File containing a list of directories to process containig the fastq files
  -output_base: Base directory where outputs will be stored
+ -db: Pfam database
  -threads: Number of threads to use
  -fasta: Reference genome FASTA file
  -gff: Annotation GFF file
@@ -18,7 +19,8 @@
   
  ## First steps of pipeline
   Confer or create index of reference file;
-  Confere or create directory with input files from listdir.txt 
+  Confer or create directory with input files from listdir.txt 
+  Confer or download the Pfam database
   
  ## Loop by directory 
   Confere or create output directory "_out"
@@ -55,7 +57,7 @@
   bedtools getfasta -fi "$fasta" -bed "${output_folder}/ncRNAs_location_direction.bed" -fo "${output_folder}/all_ncrna.fasta" -name+
 
   blast between non-coding RNA and pfam proteins
-  diamond blastx --query "${output_folder}/all_ncrna.fasta" --db /home/raquelh/database/pfam_database.dmnd --out "${output_folder}/ncrna_pfam-cov80-max1.tab" --outfmt 6 qseqid sseqid pident qcovhsp length qlen slen qstart qend sstart send evalue bitscore stitle --id 90 --query-cover 80 --evalue 1e-5 --threads "$threads" --max-target-seqs 1
+  diamond blastx --query "${output_folder}/all_ncrna.fasta" --db "${database}/pfam_database.dmnd" --out "${output_folder}/ncrna_pfam-cov80-max1.tab" --outfmt 6 qseqid sseqid pident qcovhsp length qlen slen qstart qend sstart send evalue bitscore stitle --id 90 --query-cover 80 --evalue 1e-5 --threads "$threads" --max-target-seqs 1
   
   Call 8_filterpfam.py script  
   Filter non coding RNA with pfam proteins
@@ -67,7 +69,7 @@
   
   ## Last steps of pipeline
   Merge, sort all non-coding RNA from each directory
+
   Call remake_output.py script
   10_remake_output.py: Create gff and bed format output files.
-  python3 10_remake_output.py unique_sort_allncrna.tab df_allncrna.tab df_allncrna.bed df_allncrna.gff
-
+  python3 10_remake_output.py "${output_base}/unique_sort_allncrna.tab" "${output_base}/df_allncrna.tab" "${output_base}/df_allncrna.bed df_allncrna.gff"

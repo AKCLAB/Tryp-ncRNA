@@ -2,7 +2,7 @@
 TriTry-ncRNA is a pipeline in order to identify putative non-Coding RNA in Trypanosomatids organism based on manages transcripts from RNA-seq-data. This tool begins with the detection of the set of transcripts mapped by sequencing the total RNA of the three life stages of Leishmania braziliensis: procyclic promastigote (PRO), metacyclic promastigote (META) and amastigote (AMA).
 
 ## Introduction
-* 2_identify_transcript.py: Identify in all chromossomal positions the coverage equal & up of 50x or 100x reads for strand + & - strand.
+* 2_identify_transcript.py: Identify in all chromossomal positions the coverage >= 50x or 100x reads for strand + & - strand.
 * 3_identify_possible_ncRNA_lncRNA.py: Identify lnc-RNA (>200pb) with >= 50x cov and snc-RNA (<200 pb) with >= 100x cov.
 * 4_annotation_ncRNA_lncRNA.py: Identify the location of non-coding RNA in coding or intergenic regions. 
 * 5_identify_overlap_nc-lncRNA.py: Identify the snc-RNA overlapping lnc-RNA.
@@ -12,8 +12,7 @@ TriTry-ncRNA is a pipeline in order to identify putative non-Coding RNA in Trypa
 * 9_select_ncrna.py: Final selection by directory.
 * 10_remake_output.py: Create gff and bed format output files.
 
-The pipeline process all sub-modules by directory, each directory 
-can represent a life cycle, that contain the biological repetions in fastq format (*_1/2.fastq.gz) and a size of aproximatelly 72 Mpb (~5 Gb) dependent on therholds 50 and 100.
+The pipeline process all the python code by directory, each directory can represent a life cycle, that contain the biological repetions in fastq format (*_1/2.fastq.gz) and a size of aproximately 72 Mpb (~5 Gb) dependent on therholds 50x and 100x.
  Posteriolly this are merge for all total non-coding RNAs.
 
 ## Input files
@@ -48,15 +47,18 @@ cd TriTry-ncRNA
 
 ## Invoking TriTry-ncRNA
 ```
- pipe_ncrna.sh -dir_list <file> -output <path> -db <path> -threads <number> -reffasta <file> -refgff <file> -utr5 <file> -utr3 <file>
+ bash pipe_ncrna.sh -dir_list <file> -output <path> -db <path> -threads <number> -reffasta <file> -refgff <file> -utr5 <file> -utr3 <file>
 ```
 
 ## Test with example:
 ```
-cd test/
+cd scripts/
 
-bash /path/to/TriTry-ncRNA/scripts/pipe_ncrna.sh -dir_list listdir.txt -output /path/to/TriTry-ncRNA/test -db /path/to/TriTry-ncRNA/db -threads 20 -reffasta TriTrypDB-30_LbraziliensisMHOMBR75M2903_Genome.fasta -refgff TriTrypDB-30_LbraziliensisMHOMBR75M2903.gff -utr5 UTRme_fiveutr.tsv -utr3 UTRme_threeutr.tsv
+bash pipe_ncrna.sh -dir_list /path/to/TriTry-ncRNA/test/listdir.txt -output /path/to/TriTry-ncRNA/test -db /path/to/TriTry-ncRNA/db -threads 20 -reffasta /path/to/TriTry-ncRNA/test/TriTrypDB-30_LbraziliensisMHOMBR75M2903_Genome.fasta -refgff /path/to/TriTry-ncRNA/test/TriTrypDB-30_LbraziliensisMHOMBR75M2903.gff -utr5 /path/to/TriTry-ncRNA/test/UTRme_fiveutr.tsv -utr3 /path/to/TriTry-ncRNA/TriTry-ncRNA/test/UTRme_threeutr.tsv
+
 ```
+
+
 
 ## Output Files
 
