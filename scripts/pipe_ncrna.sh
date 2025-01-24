@@ -1,9 +1,10 @@
 #!/bin/bash
 # Function to display usage information
 usage() {
-    echo "Usage: $0 -dir_list <file> -output <path> -threads <number> -reffasta <file> -refgff <file> -utr5 <file> -utr3 <file>"
+    echo "Usage: $0 -dir_list <file> -output <path> -db <path> -threads <number> -reffasta <file> -refgff <file> -utr5 <file> -utr3 <file>"
     echo "  -dir_list: File containing a list of directories to process"
-    echo "  -output_base: Base directory where outputs will be stored"
+    echo "  -output: Base directory where outputs will be stored"
+    echo "  -db: Base directory to dave Pfam database"
     echo "  -threads: Number of threads to use"
     echo "  -reffasta: Reference genome FASTA file"
     echo "  -refgff: Annotation GFF file"
@@ -12,8 +13,8 @@ usage() {
     exit 1
 }
 
-#bash pipe_ncrna.sh -dir_list listdir.txt -output /home/raquelh/noncodingRNA/ -threads 20 -reffasta TriTrypDB-30_LbraziliensisMHOMBR75M2903_Genome.fasta -refgff TriTrypDB-30_LbraziliensisMHOMBR75M2903.gff -utr5 UTRme_fiveutr.tsv -utr3 UTRme_threeutr.tsv
-#bash pipe_ncrna.sh -dir_list /home/raquelh/noncodingRNA/pro -output /home/raquelh/noncodingRNA/pro_out -threads 20 -fasta TriTrypDB-30_LbraziliensisMHOMBR75M2903_Genome.fasta -gff TriTrypDB-30_LbraziliensisMHOMBR75M2903.gff  -utr5 UTRme_fiveutr.tsv -utr3 UTRme_threeutr.tsv
+#bash pipe_ncrna.sh -dir_list listdir.txt -output /path/to/TriTry-ncRNA -db /path/to/TriTry-ncRNA/db -threads 20 -reffasta TriTrypDB-30_LbraziliensisMHOMBR75M2903_Genome.fasta -refgff TriTrypDB-30_LbraziliensisMHOMBR75M2903.gff -utr5 UTRme_fiveutr.tsv -utr3 UTRme_threeutr.tsv
+#bash pipe_ncrna.sh -dir_list /path/to/TriTry-ncRNA/pro -output /path/to/TriTry-ncRNA/pro_out -db -threads 20 -fasta TriTrypDB-30_LbraziliensisMHOMBR75M2903_Genome.fasta -gff TriTrypDB-30_LbraziliensisMHOMBR75M2903.gff  -utr5 UTRme_fiveutr.tsv -utr3 UTRme_threeutr.tsv
 
 # Parse command-line arguments
 while [[ $# -gt 0 ]]; do
@@ -26,6 +27,11 @@ while [[ $# -gt 0 ]]; do
         ;;
         -output)
         output_base="$2"
+        shift
+        shift
+        ;;
+        -db)
+        database="$2"
         shift
         shift
         ;;
@@ -61,13 +67,14 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Check if all variables are set
-if [ -z "$dir_list" ] || [ -z "$output_base" ] || [ -z "$threads" ] || [ -z "$fasta" ]; then
+if [ -z "$dir_list" ] || [ -z "$output_base" ] || [ -z "$database" ] || [ -z "$threads" ] || [ -z "$fasta" ]; then
     usage
 fi
 
 # Now use these variables in your script
 echo "FASTQ Directory: $dir_list"
 echo "Output Folder: $output_base"
+echo "Pfam database: $database"
 echo "Threads: $threads"
 echo "Reference FASTA: $fasta"
 echo "GFF File: $gff"
@@ -204,7 +211,7 @@ while IFS= read -r subdir; do
 
     #Running filter blastx
     echo "Running diamond"
-    diamond blastx --query "${output_folder}/all_ncrna.fasta" --db /home/raquelh/database/pfam_database.dmnd --out "${output_folder}/ncrna_pfam-cov80-max1.tab" --outfmt 6 qseqid sseqid pident qcovhsp length qlen slen qstart qend sstart send evalue bitscore stitle --id 90 --query-cover 80 --evalue 1e-5 --threads "$threads" --max-target-seqs 1
+    diamond blastx --query "${output_folder}/all_ncrna.fasta" --db "${database}/pfam_database.dmnd" --out "${output_folder}/ncrna_pfam-cov80-max1.tab" --outfmt 6 qseqid sseqid pident qcovhsp length qlen slen qstart qend sstart send evalue bitscore stitle --id 90 --query-cover 80 --evalue 1e-5 --threads "$threads" --max-target-seqs 1
     echo "diamond blastx done successefully"
     
     echo "Match between predicted ncRNA and pfam proteins"

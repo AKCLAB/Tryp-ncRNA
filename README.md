@@ -13,7 +13,8 @@ TriTry-ncRNA is a pipeline in order to identify putative non-Coding RNA in Trypa
 * 10_remake_output.py: Create gff and bed format output files.
 
 The pipeline process all sub-modules by directory, each directory 
-can reprsent a life cycle, that contain the biological repetions in fastq format (*_1/2.fastq.gz). Posteriolly this are merge for all total non-coding RNAs.
+can represent a life cycle, that contain the biological repetions in fastq format (*_1/2.fastq.gz) and a size of aproximatelly 72 Mpb (~5 Gb) dependent on therholds 50 and 100.
+ Posteriolly this are merge for all total non-coding RNAs.
 
 ## Input files
 TriTry-ncRNA users should have the following minimal input files:
@@ -29,8 +30,10 @@ The following software and libraries must be installed on your machine:
 * Samtools
 * Picard
 * Bedtools
-* BLAST+ 
+* Diamond
 * Python3
+* Pfam Database
+
 
 ## Installation
 Clone the TriTry-ncRNA git:
@@ -43,10 +46,22 @@ Go to scripts directory
 cd TriTry-ncRNA
 ```
 
+## Invoking TriTry-ncRNA
+```
+ pipe_ncrna.sh -dir_list <file> -output <path> -db <path> -threads <number> -reffasta <file> -refgff <file> -utr5 <file> -utr3 <file>
+```
+
 ## Test with example:
 ```
 cd test/
+
+bash /path/to/TriTry-ncRNA/scripts/pipe_ncrna.sh -dir_list listdir.txt -output /path/to/TriTry-ncRNA/test -db /path/to/TriTry-ncRNA/db -threads 20 -reffasta TriTrypDB-30_LbraziliensisMHOMBR75M2903_Genome.fasta -refgff TriTrypDB-30_LbraziliensisMHOMBR75M2903.gff -utr5 UTRme_fiveutr.tsv -utr3 UTRme_threeutr.tsv
 ```
+
+## Output Files
+
+
+## Command line options
 
 
 
