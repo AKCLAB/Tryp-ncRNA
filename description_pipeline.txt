@@ -28,19 +28,19 @@
   Count the coverage by base 
 
   Call 2_identify_transcript.py script
-  To identify in all positions of chromossomes with a coverage of 50 or 100 reads for strand + and negative strand
+  To identify in all chromossomal positions the coverage equal & up of 50x or 100x reads for strand + & - strand.
   python3 2_identify_transcript.py "${output_folder}/count_igv.wig" "$output_folder" -threshold 100,50
 
   Call 3_identify_possible_ncRNA_lncRNA.py script
-  To identify large noncoding RNA (>200pb) with >= 50 of coverage and small non-coding RNA (<200 pb) with  >= 100 of coverage) 
+  To identify lnc-RNA (>200pb) with >= 50x cov and snc-RNA (<200 pb) with >= 100x cov.
   python3 3_identify_possible_ncRNA_lncRNA.py "${output_folder}/transcript_100cov.txt" "${output_folder}/transcript_50cov.txt" "${output_folder}/possible_ncRNA.txt" "${output_folder}/possible_lncRNA.txt"
 
   Call 4_annotation_ncRNA_lncRNA.py script
-  To identify the location in coding or intergenic regions of non-coding RNA 
+  To identify the location of non-coding RNA in coding or intergenic regions. 
   python3 4_annotation_ncRNA_lncRNA.py "${output_folder}/possible_ncRNA.txt" "${output_folder}/possible_lncRNA.txt" "$gff" "${output_folder}/annotation_ncRNA.txt" "${output_folder}/annotation_lncRNA.txt"
 
   Call 5_identify_overlap_nc-lncRNA.py script
-  To identify small non-coding overlapping large non-coding RNA
+  To identify the snc-RNA overlapping lnc-RNA.
   python3 5_identify_overlap_nc-lncRNA.py "${output_folder}/annotation_ncRNA.txt" "${output_folder}/annotation_lncRNA.txt" "${output_folder}/annotation_ncRNA_final.txt"
 
   Call 6_identify_ptu.py script
@@ -67,4 +67,7 @@
   
   ## Last steps of pipeline
   Merge, sort all non-coding RNA from each directory
-  To create gff and bed format output files 
+  Call remake_output.py script
+  10_remake_output.py: Create gff and bed format output files.
+  python3 10_remake_output.py unique_sort_allncrna.tab df_allncrna.tab df_allncrna.bed df_allncrna.gff
+
