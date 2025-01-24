@@ -1,5 +1,6 @@
 # TriTry-ncRNA
-TriTry-ncRNA is a pipeline in order to identify putative non-Coding RNA in Trypanosomatids organism based on manages transcripts from RNA-seq-data. This tool begins with the detection of the set of transcripts mapped by sequencing the total RNA of the three life stages of Leishmania braziliensis: procyclic promastigote (PRO), metacyclic promastigote (META) and amastigote (AMA).
+
+TriTry-ncRNA is a pipeline in order to identify putative non-coding RNAs in Trypanosomatids organisms by analyzing transcripts derived from RNA-seq data. This tool initiates its process by detecting the set of transcripts mapped from sequencing the total RNA of the three life stages of Leishmania braziliensis: procyclic promastigote (PRO), metacyclic promastigote (META), and amastigote (AMA).
 
 ## Introduction
 * 2_identify_transcript.py: Identify in all chromossomal positions the coverage >= 50x or 100x reads for strand + & - strand.
