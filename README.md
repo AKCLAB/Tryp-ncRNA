@@ -15,7 +15,7 @@ TriTry-ncRNA is a pipeline in order to identify putative non-Coding RNA in Trypa
 The pipeline process all sub-modules by directory, each directory 
 can reprsent a life cycle, that contain the biological repetions in fastq format (*_1/2.fastq.gz). Posteriolly this are merge for all total non-coding RNAs.
 
-##Input files
+## Input files
 TriTry-ncRNA users should have the following minimal input files:
 - lisdir.txt (-dir_list) : File contain a list of
  directories path that contain all fastq files.
