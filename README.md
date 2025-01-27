@@ -9,9 +9,9 @@ TriTry-ncRNA is a pipeline in order to identify putative non-coding RNAs in Tryp
 * 5_identify_overlap_nc-lncRNA.py: Identify the snc-RNA overlapping lnc-RNA.
 * 6_identify_ptu.py: To identify: PTU regions.
 * 7_parser_UTR_sense_antisense.py: Add information of sense of non-coding RNA in relation from PTUs and UTR regions.
-* 8_filterpfam.py: Filter non-coding RNA from blast against pfam proteins.
-* 9_select_ncrna.py: Final selection by directory.
-* 10_remake_output.py: Create gff and bed format output files.
+* 8_select_ncrna.py: Final selection by directory.
+* 9_remake_output.py: Create gff and bed format output files.
+* 10_filterpfam.py: Filter non-coding RNA from blast against pfam proteins.
 
 The pipeline process all the python code by directory, each directory can represent a life cycle, that contain the biological repetions in fastq format (*_1/2.fastq.gz) and a size of aproximately 72 Mpb (~5 Gb) dependent on therholds 50x and 100x.
  Posteriolly this are merge for all total non-coding RNAs.

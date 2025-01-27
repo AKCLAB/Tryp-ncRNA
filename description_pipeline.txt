@@ -58,18 +58,18 @@
 
   blast between non-coding RNA and pfam proteins
   diamond blastx --query "${output_folder}/all_ncrna.fasta" --db "${database}/pfam_database.dmnd" --out "${output_folder}/ncrna_pfam-cov80-max1.tab" --outfmt 6 qseqid sseqid pident qcovhsp length qlen slen qstart qend sstart send evalue bitscore stitle --id 90 --query-cover 80 --evalue 1e-5 --threads "$threads" --max-target-seqs 1
-  
-  Call 8_filterpfam.py script  
-  Filter non coding RNA with pfam proteins
-  python3 8_filterpfam.py "${output_folder}/ncrna_pfam-cov80-max1.tab" "${output_folder}/header_to_remove.tsv" "${output_folder}/all_ncrna.fasta" "${output_folder}/filtered_pfam.fasta"
-
-  Call 9_select_ncrna.py script
+ 
+  Call 8_select_ncrna.py script
   Selection of the non-coding RNA by each directory
-  python3 9_select_ncrna.py "${output_folder}/ncRNAs_location_direction.bed" "${output_folder}/header_to_remove.tsv" "${output_folder}/final_ncRNAs_location_direction.bed"
+  python3 8_select_ncrna.py "${output_folder}/ncRNAs_location_direction.bed" "${output_folder}/ncrna_pfam-cov80-max1.tab" "${output_folder}/final_ncRNAs_location_direction.bed"
   
   ## Last steps of pipeline
   Merge, sort all non-coding RNA from each directory
 
   Call remake_output.py script
-  10_remake_output.py: Create gff and bed format output files.
-  python3 10_remake_output.py "${output_base}/unique_sort_allncrna.tab" "${output_base}/df_allncrna.tab" "${output_base}/df_allncrna.bed df_allncrna.gff"
+  9_remake_output.py: Create gff and bed format output files.
+  python3 9_remake_output.py "${output_base}/unique_sort_allncrna.tab" "${output_base}/df_allncrna.tab" "${output_base}/df_allncrna.bed df_allncrna.gff"
+
+  #Call 10_filterpfam.py script  
+  #Filter non coding RNA with pfam proteins
+  #python3 10_filterpfam.py "${output_folder}/ncrna_pfam-cov80-max1.tab" "${output_folder}/header_to_remove.tsv" "${output_folder}/all_ncrna.fasta" "${output_folder}/filtered_pfam.fasta"

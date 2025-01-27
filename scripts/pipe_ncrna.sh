@@ -224,11 +224,8 @@ while IFS= read -r subdir; do
     diamond blastx --query "${output_folder}/all_ncrna.fasta" --db "${database}/pfam_database.dmnd" --out "${output_folder}/ncrna_pfam-cov80-max1.tab" --outfmt 6 qseqid sseqid pident qcovhsp length qlen slen qstart qend sstart send evalue bitscore stitle --id 90 --query-cover 80 --evalue 1e-5 --threads "$threads" --max-target-seqs 1
     echo "diamond blastx done successefully"
     
-    echo "Match between predicted ncRNA and pfam proteins"
-    python3 8_filterpfam.py "${output_folder}/ncrna_pfam-cov80-max1.tab" "${output_folder}/header_to_remove.tsv" "${output_folder}/all_ncrna.fasta" "${output_folder}/filtered_pfam.fasta"
-
     echo "Final selection of ncRNA"
-    python3 9_select_ncrna.py "${output_folder}/ncRNAs_location_direction.bed" "${output_folder}/header_to_remove.tsv" "${output_folder}/final_ncRNAs_location_direction.bed"
+    python3 python3 8_select_ncrna.py "${output_folder}/ncRNAs_location_direction.bed" "${output_folder}/ncrna_pfam-cov80-max1.tab" "${output_folder}/final_ncRNAs_location_direction.bed"
 
 done < "$dir_list"
 
@@ -253,4 +250,7 @@ cat ${allstages} > "${output_base}/final_all_ncrna.bed"
 sort -k1,1 -k2,2n "${output_base}/final_all_ncrna.bed" > "${output_base}/sorted_all_ncRNA.bed"
 bedtools merge -i "${output_base}/sorted_all_ncRNA.bed" -s -c 4,6,7,8,9,10 -o distinct,distinct,distinct,distinct,distinct,distinct > "${output_base}/unique_sort_allncrna.tab"
 
-python3 10_remake_output.py "${output_base}/unique_sort_allncrna.tab" "${output_base}/df_allncrna.tab" "${output_base}/df_allncrna.bed df_allncrna.gff"'
+python3 9_remake_output.py "${output_base}/unique_sort_allncrna.tab" "${output_base}/df_allncrna.tab" "${output_base}/df_allncrna.bed df_allncrna.gff"'
+
+#echo "Match between predicted ncRNA and pfam proteins"
+#python3 10_filterpfam.py "${output_folder}/ncrna_pfam-cov80-max1.tab" "${output_folder}/header_to_remove.tsv" "${output_folder}/all_ncrna.fasta" "${output_folder}/filtered_pfam.fasta"
