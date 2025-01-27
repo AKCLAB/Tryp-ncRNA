@@ -2,7 +2,7 @@ import pandas as pd
 import sys
 import numpy as np
 
-#python 10_remake_output.py unique_sort_allncrna.tab df_allncrna.tab df_allncrna.bed df_allncrna.gff
+#python 9_remake_output.py unique_sort_allncrna.tab df_allncrna.tab df_allncrna.bed df_allncrna.gff
 
 def process_file(sort_allncrna, allncrna_tab, allncrna_bed, allncrna_gff):
     #import all sort aunique ncRNAs

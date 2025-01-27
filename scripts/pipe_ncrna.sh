@@ -92,6 +92,15 @@ else
     echo "BT2 files found, skipping bowtie-build"
 fi
 
+# Verify the index file
+if ! ls "$ref_name"*.fai 1> /dev/null 2>&1; then
+    echo "Running bowtie-build"
+    samtools faidx "${ref_name}.fasta"
+    echo "Index created successfully"
+else
+    echo "BT2 files found, skipping samtools"
+fi
+
 echo "Verify the Pfam database"
 if [ ! -f "$database/pfam_database.dmnd" ]; then
     mkdir -p "$database"
@@ -250,7 +259,9 @@ cat ${allstages} > "${output_base}/final_all_ncrna.bed"
 sort -k1,1 -k2,2n "${output_base}/final_all_ncrna.bed" > "${output_base}/sorted_all_ncRNA.bed"
 bedtools merge -i "${output_base}/sorted_all_ncRNA.bed" -s -c 4,6,7,8,9,10 -o distinct,distinct,distinct,distinct,distinct,distinct > "${output_base}/unique_sort_allncrna.tab"
 
-python3 9_remake_output.py "${output_base}/unique_sort_allncrna.tab" "${output_base}/df_allncrna.tab" "${output_base}/df_allncrna.bed df_allncrna.gff"'
+python3 9_remake_output.py "${output_base}/unique_sort_allncrna.tab" "${output_base}/df_allncrna.tab" "${output_base}/df_allncrna.bed" "${output_base}/df_allncrna.gff"'
 
-#echo "Match between predicted ncRNA and pfam proteins"
-#python3 10_filterpfam.py "${output_folder}/ncrna_pfam-cov80-max1.tab" "${output_folder}/header_to_remove.tsv" "${output_folder}/all_ncrna.fasta" "${output_folder}/filtered_pfam.fasta"
+echo "Extract fasta non-coding RNA"
+#Extract fasta sequences 
+bedtools getfasta -fi "$fasta" -bed "${output_base}/df_allncrna.bed" -fo "${output_folder}/fasta_ncrna.fasta" -name+
+echo "Extracted fasta sequences"
