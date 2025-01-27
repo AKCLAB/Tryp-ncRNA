@@ -263,5 +263,5 @@ python3 9_remake_output.py "${output_base}/unique_sort_allncrna.tab" "${output_b
 
 echo "Extract fasta non-coding RNA"
 #Extract fasta sequences 
-bedtools getfasta -fi "$fasta" -bed "${output_base}/df_allncrna.bed" -fo "${output_folder}/fasta_ncrna.fasta" -name+
+bedtools getfasta -fi "$fasta" -bed "${output_base}/df_allncrna.bed" -fo "${output_base}/fasta_ncrna.fasta" -name+
 echo "Extracted fasta sequences"
