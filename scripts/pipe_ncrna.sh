@@ -225,7 +225,7 @@ while IFS= read -r subdir; do
     echo "diamond blastx done successefully"
     
     echo "Final selection of ncRNA"
-    python3 python3 8_select_ncrna.py "${output_folder}/ncRNAs_location_direction.bed" "${output_folder}/ncrna_pfam-cov80-max1.tab" "${output_folder}/final_ncRNAs_location_direction.bed"
+    python3 8_select_ncrna.py "${output_folder}/ncRNAs_location_direction.bed" "${output_folder}/ncrna_pfam-cov80-max1.tab" "${output_folder}/final_ncRNAs_location_direction.bed"
 
 done < "$dir_list"
 
