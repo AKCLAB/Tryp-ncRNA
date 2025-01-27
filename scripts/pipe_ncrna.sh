@@ -259,7 +259,7 @@ cat ${allstages} > "${output_base}/final_all_ncrna.bed"
 sort -k1,1 -k2,2n "${output_base}/final_all_ncrna.bed" > "${output_base}/sorted_all_ncRNA.bed"
 bedtools merge -i "${output_base}/sorted_all_ncRNA.bed" -s -c 4,6,7,8,9,10 -o distinct,distinct,distinct,distinct,distinct,distinct > "${output_base}/unique_sort_allncrna.tab"
 
-python3 9_remake_output.py "${output_base}/unique_sort_allncrna.tab" "${output_base}/df_allncrna.tab" "${output_base}/df_allncrna.bed" "${output_base}/df_allncrna.gff"'
+python3 9_remake_output.py "${output_base}/unique_sort_allncrna.tab" "${output_base}/df_allncrna.tab" "${output_base}/df_allncrna.bed" "${output_base}/df_allncrna.gff"
 
 echo "Extract fasta non-coding RNA"
 #Extract fasta sequences 

@@ -69,7 +69,3 @@
   Call remake_output.py script
   9_remake_output.py: Create gff and bed format output files.
   python3 9_remake_output.py "${output_base}/unique_sort_allncrna.tab" "${output_base}/df_allncrna.tab" "${output_base}/df_allncrna.bed df_allncrna.gff"
-
-  #Call 10_filterpfam.py script  
-  #Filter non coding RNA with pfam proteins
-  #python3 10_filterpfam.py "${output_folder}/ncrna_pfam-cov80-max1.tab" "${output_folder}/header_to_remove.tsv" "${output_folder}/all_ncrna.fasta" "${output_folder}/filtered_pfam.fasta"
