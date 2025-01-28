@@ -2,7 +2,6 @@ import pandas as pd
 import sys
 
 #code: python3 8_select_ncrna.py ncRNAs_location_direction.bed ncrna_pfam-cov80-max1.tab final_ncRNAs_location_direction.tab
-
 #input & output files
 #ncrna_bed = "ncRNAs_location_direction.bed"
 #blast_tab = ncrna_pfam-cov80-max1.tab
@@ -21,8 +20,8 @@ def process_file(ncrna_file, blast_tab, final_ncrna):
     blast_pfam = pd.read_csv(blast_tab, sep='\t', names=["query id","subject id","identity","query coverage per subject","alignment length","query length","subject length","q. start","q. end","s. start","s. end","evalue","bit score", "subject title"])
     
     # From the list all predicted ncRNA remove the included in removed_file
-    filtered_df = ncrna[~ncrna['info_ncrna'].isin(blast_pfam["query id"])]
-    filtered_df.drop('info_ncrna', axis=1, inplace=True) 
+    filtered_df = ncrna[~ncrna['info_ncrna'].isin(blast_pfam["query id"])].copy()
+    filtered_df = filtered_df.drop('info_ncrna', axis=1) 
     filtered_df.to_csv(final_ncrna, sep='\t', index=False, header=False) # final predicted ncRNA
 
 # Import Files

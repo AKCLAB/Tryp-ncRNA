@@ -20,49 +20,15 @@ usage() {
 while [[ $# -gt 0 ]]; do
     key="$1"
     case $key in
-        -dir_list)
-        dir_list="$2"
-        shift # past argument
-        shift # past value
-        ;;
-        -output)
-        output_base="$2"
-        shift
-        shift
-        ;;
-        -db)
-        database="$2"
-        shift
-        shift
-        ;;
-        -threads)
-        threads="$2"
-        shift
-        shift
-        ;;
-        -reffasta)
-        fasta="$2"
-        shift
-        shift
-        ;;
-        -refgff)
-        gff="$2"
-        shift
-        shift
-        ;;
-        -utr5)
-        utr5="$2"
-        shift
-        shift
-        ;;
-        -utr3)
-        utr3="$2"
-        shift
-        shift
-        ;;
-        *)    # unknown option
-        usage
-        ;;
+        -dir_list) dir_list="$2"; shift; shift ;;
+        -output) output_base="$2"; shift; shift ;;
+        -db) database="$2"; shift; shift ;;
+        -threads) threads="$2"; shift; shift ;;
+        -reffasta) fasta="$2"; shift; shift ;;
+        -refgff) gff="$2"; shift; shift ;;
+        -utr5) utr5="$2"; shift; shift ;;
+        -utr3) utr3="$2"; shift; shift ;;
+        *) usage ;;
     esac
 done
 
@@ -86,7 +52,7 @@ ref_name=$(basename "$fasta" .fasta)
 # Verificar si no existen archivos .bt2
 if ! ls "$ref_name"*.bt2 1> /dev/null 2>&1; then
     echo "Running bowtie-build"
-    bowtie2-build "${ref_name}.fasta" "$ref_name"
+    bowtie2-build "${output_base}/${ref_name}.fasta" "$ref_name"
     echo "Index created successfully"
 else
     echo "BT2 files found, skipping bowtie-build"
@@ -95,7 +61,7 @@ fi
 # Verify the index file
 if ! ls "$ref_name"*.fai 1> /dev/null 2>&1; then
     echo "Running bowtie-build"
-    samtools faidx "${ref_name}.fasta"
+    samtools faidx "${output_base}/${ref_name}.fasta"
     echo "Index created successfully"
 else
     echo "BT2 files found, skipping samtools"
@@ -124,7 +90,7 @@ while IFS= read -r subdir; do
 
     # Extract the base name of the input directory
     dir_name=$(basename "$subdir")
-
+    echo "${dir_name}"
     # Construct the output directory name
     output_folder="${output_base}/${dir_name}_out"
     # Ensure the output directory exists
@@ -132,7 +98,7 @@ while IFS= read -r subdir; do
     if [ ! -d "$output_folder" ]; then
         mkdir "$output_folder"
     fi
-
+    echo "${output_folder}"
     name_samples=()
     # Loop por todas as amostras
     for fastq_file in "${subdir}"/*_1.fastq.gz; do
@@ -158,7 +124,7 @@ while IFS= read -r subdir; do
             continue
         fi
         # Run bowtie2
-        bowtie2 \
+    #    bowtie2 \
         -N 1 \
         -p "$threads" \
         --local \
@@ -215,12 +181,12 @@ while IFS= read -r subdir; do
 
     echo "Running 6_identify_ptu.py script"
     # Call 6_identify_ptu.py script
-    python3 6_identify_ptu.py "$gff" possible_ptu.txt
+    python3 6_identify_ptu.py "$gff" "${output_folder}/possible_ptu.txt"
     echo "Identify PTU regions"
 
     echo "Running 7_parser_UTR_sense_antisense.py script"
     # Call 7_parser_UTR_sense_antisense.py script
-    python3 7_parser_UTR_sense_antisense.py "${output_folder}/annotation_ncRNA_final.txt" "${output_folder}/annotation_lncRNA.txt" possible_ptu.txt "${output_folder}/ncRNAs_location_direction.bed" "$utr5" "$utr3"
+    python3 7_parser_UTR_sense_antisense.py "${output_folder}/annotation_ncRNA_final.txt" "${output_folder}/annotation_lncRNA.txt" "${output_folder}/possible_ptu.txt" "${output_folder}/ncRNAs_location_direction.bed" "$utr5" "$utr3"
     echo "Annotation transcript at sense and location level"
 
     echo "Running bedtools getfasta"
@@ -241,7 +207,7 @@ done < "$dir_list"
 echo "cat all bed outputs, sort and merge all unique anotates ncRNA"
 allstages=""
 # Loop through directories ending with "_out"
-for subdir in *_out; do
+for subdir in "$output_base"/*_out; do
     # Ensure it's a directory
     if [ -d "$subdir" ]; then
         # Check if the expected file exists
@@ -253,7 +219,6 @@ for subdir in *_out; do
     fi
 done
 echo "${allstages}" #Print the concatenated result
-
 
 cat ${allstages} > "${output_base}/final_all_ncrna.bed"
 sort -k1,1 -k2,2n "${output_base}/final_all_ncrna.bed" > "${output_base}/sorted_all_ncRNA.bed"
