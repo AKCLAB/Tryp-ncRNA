@@ -1,7 +1,7 @@
 #!/bin/bash
 # Function to display usage information
 usage() {
-    echo "Usage: $0 -dir_list <file> -output <path> -db <path> -threads <number> -reffasta <file> -refgff <file> -utr5 <file> -utr3 <file>"
+    echo "Usage: $0 -dir_list <file> -output <path> -db <path> -threads <number> -reffasta <file> -refgff <file> -utr5 <file> -utr3 <file> -dir_tool <path>"
     echo "  -dir_list: File containing a list of directories to process"
     echo "  -output: Base directory where outputs will be stored"
     echo "  -db: Base directory to dave Pfam database"
@@ -10,11 +10,12 @@ usage() {
     echo "  -refgff: Annotation GFF file"
     echo "  -utr5: Annotation file for 5' UTRs (optional)"
     echo "  -utr3: Annotation file for 3' UTRs (optional)"
+    echo "  -dir_tool: Directory carrying the tools"
     exit 1
 }
 
-#bash pipe_ncrna.sh -dir_list listdir.txt -output /path/to/TriTry-ncRNA -db /path/to/TriTry-ncRNA/db -threads 20 -reffasta /path/to/work/TriTrypDB-30_LbraziliensisMHOMBR75M2903_Genome.fasta -refgff /path/to/work/TriTrypDB-30_LbraziliensisMHOMBR75M2903.gff -utr5 /path/to/work/UTRme_fiveutr.tsv -utr3 /path/to/work/UTRme_threeutr.tsv
-#bash pipe_ncrna.sh -dir_list /path/to/TriTry-ncRNA/pro -output /path/to/TriTry-ncRNA/pro_out -db -threads 20 -fasta /path/to/work/TriTrypDB-30_LbraziliensisMHOMBR75M2903_Genome.fasta -gff /path/to/work/TriTrypDB-30_LbraziliensisMHOMBR75M2903.gff  -utr5 /path/to/work/UTRme_fiveutr.tsv -utr3 /path/to/work/UTRme_threeutr.tsv
+#bash pipe_ncrna.sh -dir_list listdir.txt -output /path/to/TriTry-ncRNA -db /path/to/TriTry-ncRNA/db -threads 20 -reffasta /path/to/work/TriTrypDB-30_LbraziliensisMHOMBR75M2903_Genome.fasta -refgff /path/to/work/TriTrypDB-30_LbraziliensisMHOMBR75M2903.gff -utr5 /path/to/work/UTRme_fiveutr.tsv -utr3 /path/to/work/UTRme_threeutr.tsv -dir_tool /path/to/program
+#bash pipe_ncrna.sh -dir_list /path/to/TriTry-ncRNA/pro -output /path/to/TriTry-ncRNA/pro_out -db -threads 20 -fasta /path/to/work/TriTrypDB-30_LbraziliensisMHOMBR75M2903_Genome.fasta -gff /path/to/work/TriTrypDB-30_LbraziliensisMHOMBR75M2903.gff  -utr5 /path/to/work/UTRme_fiveutr.tsv -utr3 /path/to/work/UTRme_threeutr.tsv -dir_tool /path/to/program
 
 # Parse command-line arguments
 while [[ $# -gt 0 ]]; do
@@ -28,6 +29,7 @@ while [[ $# -gt 0 ]]; do
         -refgff) gff="$2"; shift; shift ;;
         -utr5) utr5="$2"; shift; shift ;;
         -utr3) utr3="$2"; shift; shift ;;
+        -dir_tool) dir_tool="$2"; shift; shift ;;
         *) usage ;;
     esac
 done
@@ -36,6 +38,9 @@ done
 if [ -z "$dir_list" ] || [ -z "$output_base" ] || [ -z "$database" ] || [ -z "$threads" ] || [ -z "$fasta" ]; then
     usage
 fi
+
+#Save variable of Scripts or work path
+path_script="$(dirname "$(realpath "$0")")"
 
 # Now use these variables in your script
 echo "FASTQ Directory: $dir_list"
@@ -46,11 +51,12 @@ echo "Reference FASTA: $fasta"
 echo "GFF File: $gff"
 echo "optional UTR5 File: $utr5"
 echo "optional UTR3 File: $utr3"
+echo "Tool Directory: $dir_tool"
 
 #verify the index files or run reference index 
 ref_name=$(basename "$fasta" .fasta)
 # Verificar si no existen archivos .bt2
-if ! ls "$ref_name"*.bt2 1> /dev/null 2>&1; then
+if ! ls "${output_base}/${ref_name}"*.bt2 1> /dev/null 2>&1; then
     echo "Running bowtie-build"
     bowtie2-build "${output_base}/${ref_name}.fasta" "$ref_name"
     echo "Index created successfully"
@@ -59,12 +65,12 @@ else
 fi
 
 # Verify the index file
-if ! ls "$ref_name"*.fai 1> /dev/null 2>&1; then
+if ! ls "${output_base}/${ref_name}.fai" 1> /dev/null 2>&1; then
     echo "Running bowtie-build"
     samtools faidx "${output_base}/${ref_name}.fasta"
     echo "Index created successfully"
 else
-    echo "BT2 files found, skipping samtools"
+    echo "FAI index found, skipping samtools"
 fi
 
 echo "Verify the Pfam database"
@@ -206,7 +212,7 @@ done < "$dir_list"
 
 echo "cat all bed outputs, sort and merge all unique anotates ncRNA"
 allstages=""
-# Loop through directories ending with "_out"
+#Loop through directories ending with "_out"
 for subdir in "$output_base"/*_out; do
     # Ensure it's a directory
     if [ -d "$subdir" ]; then
@@ -227,6 +233,20 @@ bedtools merge -i "${output_base}/sorted_all_ncRNA.bed" -s -c 4,6,7,8,9,10 -o di
 python3 9_remake_output.py "${output_base}/unique_sort_allncrna.tab" "${output_base}/df_allncrna.tab" "${output_base}/df_allncrna.bed" "${output_base}/df_allncrna.gff"
 
 echo "Extract fasta non-coding RNA"
-#Extract fasta sequences 
 bedtools getfasta -fi "$fasta" -bed "${output_base}/df_allncrna.bed" -fo "${output_base}/fasta_ncrna.fasta" -name+
 echo "Extracted fasta sequences"
+
+# Check if all variables are set
+if [ -z "$dir_tool" ] ; then
+    usage
+fi
+#run in sudo
+echo "Run PORTRAIT"
+cd "${dir_tool}/portrait-1.1" && perl portrait-1.1.pl -i "${output_base}/fasta_ncrna.fasta"
+
+echo "Run ptRNApred1"
+cd "${dir_tool}/ptRNApred1.0" && perl perl-start.pl -i "${output_base}/fasta_ncrna.fasta" -n "$threads" > "${output_base}/output_ptrnapred1.txt"
+
+echo "Run processing PORTRAIT & ptRNApred1"
+python3 "${path_script}/10_postprocessing_ncrna.py" "${output_base}/df_allncrna.tab" "${output_base}/fasta_ncrna.fasta_results_all.scores" "${output_base}/output_ptrnapred1.txt"
+

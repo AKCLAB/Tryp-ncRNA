@@ -1,2 +1,3 @@
-/path/to/test/pro
-/path/to/test/ama
+/path/to/ama
+/path/to/meta
+/path/to/pro
