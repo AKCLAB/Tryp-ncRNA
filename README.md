@@ -10,7 +10,9 @@ TriTry-ncRNA is a pipeline in order to identify putative non-coding RNAs in Tryp
 * 6_identify_ptu.py: To identify: PTU regions.
 * 7_parser_UTR_sense_antisense.py: Add information of sense of non-coding RNA in relation from PTUs and UTR regions.
 * 8_select_ncrna.py: Final selection by directory.
-* 9_remake_output.py: Create gff and bed format output files.
+* 9_remake_output.py: Create gff, tab and bed format output files.
+* 10_postprocessing_ncrna.py : complement with characterization of non-coding RNA
+
 
 The pipeline process all the python code by directory, each directory can represent a life cycle, that contain the biological repetions in fastq format (*_1/2.fastq.gz) and a size of aproximately 72 Mpb (~5 Gb) dependent on therholds 50x and 100x.
  Posteriolly this are merge for all total non-coding RNAs.
@@ -32,6 +34,9 @@ The following software and libraries must be installed on your machine:
 * Diamond
 * Python3
 * Pfam Database
+* portrait-1.1 (optional)
+* ptRNApred1.0 (optional)
+* tRNAscan-SE (optional)
 
 
 ## Installation
@@ -47,14 +52,14 @@ cd TriTry-ncRNA
 
 ## Invoking TriTry-ncRNA
 ```
- bash pipe_ncrna.sh -dir_list <file> -output <path> -db <path> -threads <number> -reffasta <file> -refgff <file> -utr5 <file> -utr3 <file>
+ bash pipe_ncrna.sh -dir_list <file> -output <path> -db <path> -threads <number> -reffasta <file> -refgff <file> -utr5 <file> -utr3 <file> -dir_tool <path>
 ```
 
 ## Test with example:
 ```
 cd scripts/
 
-bash pipe_ncrna.sh -dir_list /path/to/TriTry-ncRNA/test/listdir.txt -output /path/to/TriTry-ncRNA/test -db /path/to/TriTry-ncRNA/db -threads 20 -reffasta /path/to/TriTry-ncRNA/test/TriTrypDB-30_LbraziliensisMHOMBR75M2903_Genome.fasta -refgff /path/to/TriTry-ncRNA/test/TriTrypDB-30_LbraziliensisMHOMBR75M2903.gff -utr5 /path/to/TriTry-ncRNA/test/UTRme_fiveutr.tsv -utr3 /path/to/TriTry-ncRNA/TriTry-ncRNA/test/UTRme_threeutr.tsv
+bash pipe_ncrna.sh -dir_list /path/to/TriTry-ncRNA/test/listdir.txt -output /path/to/TriTry-ncRNA/test -db /path/to/TriTry-ncRNA/db -threads 20 -reffasta /path/to/TriTry-ncRNA/test/TriTrypDB-30_LbraziliensisMHOMBR75M2903_Genome.fasta -refgff /path/to/TriTry-ncRNA/test/TriTrypDB-30_LbraziliensisMHOMBR75M2903.gff -utr5 /path/to/TriTry-ncRNA/test/UTRme_fiveutr.tsv -utr3 /path/to/TriTry-ncRNA/TriTry-ncRNA/test/UTRme_threeutr.tsv -dir_tool /path/to/program
 
 ```
 

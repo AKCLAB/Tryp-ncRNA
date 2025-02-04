@@ -247,6 +247,8 @@ cd "${dir_tool}/portrait-1.1" && perl portrait-1.1.pl -i "${output_base}/fasta_n
 echo "Run ptRNApred1"
 cd "${dir_tool}/ptRNApred1.0" && perl perl-start.pl -i "${output_base}/fasta_ncrna.fasta" -n "$threads" > "${output_base}/output_ptrnapred1.txt"
 
-echo "Run processing PORTRAIT & ptRNApred1"
-python3 "${path_script}/10_postprocessing_ncrna.py" "${output_base}/df_allncrna.tab" "${output_base}/fasta_ncrna.fasta_results_all.scores" "${output_base}/output_ptrnapred1.txt"
+echo "Run tRNAscan"
+tRNAscan-SE -G -o "${output_base}/tRNAscan-output.tab" -f "${output_base}/tRNAscan_structure" -q "${output_base}/fasta_ncrna.fasta"
 
+echo "Run processing PORTRAIT & ptRNApred1 & tRNAscan"
+python3 "${path_script}/10_postprocessing_ncrna.py" "${output_base}/df_allncrna.tab" "${output_base}/fasta_ncrna.fasta_results_all.scores" "${output_base}/output_ptrnapred1.txt" "${output_base}/tRNAscan-output.tab"

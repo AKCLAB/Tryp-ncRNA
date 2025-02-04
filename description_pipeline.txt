@@ -3,7 +3,7 @@
 #Description of pipeline
 
 ```
- pipe_ncrna.sh -dir_list <file> -output <path> -db <path> -threads <number> -reffasta <file> -refgff <file> -utr5 <file> -utr3 <file>"
+ pipe_ncrna.sh -dir_list <file> -output <path> -db <path> -threads <number> -reffasta <file> -refgff <file> -utr5 <file> -utr3 <file> -dir_tool <path>"
 ```
  -dir_list: File containing a list of directories to process containig the fastq files
  -output_base: Base directory where outputs will be stored
@@ -13,6 +13,7 @@
  -gff: Annotation GFF file
  -utr5: Annotation file for 5' UTRs (optional)
  -utr3: Annotation file for 3' UTRs (optional)
+ -dir_tool Directory carrying the tools
   
  listdir.txt format 
  
@@ -69,3 +70,8 @@
   Call remake_output.py script
   9_remake_output.py: Create gff and bed format output files.
   python3 9_remake_output.py "${output_base}/unique_sort_allncrna.tab" "${output_base}/df_allncrna.tab" "${output_base}/df_allncrna.bed df_allncrna.gff"
+
+  Run processing PORTRAIT & ptRNApred1 & tRNAscan
+  10_postprocessing_ncrna.py:complement with characterization of non-coding RNA.
+  python3 "${path_script}/10_postprocessing_ncrna.py" "${output_base}/df_allncrna.tab" "${output_base}/fasta_ncrna.fasta_results_all.scores" "${output_base}/output_ptrnapred1.txt" "${output_base}/tRNAscan-output.tab"
+
