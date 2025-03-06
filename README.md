@@ -62,7 +62,7 @@ bash Miniconda3-latest-Linux-x86_64.sh
 Once conda/miniconda is installed, you must create an enviroment and install TriTry-ncRNA.  The file tritry-ncrna.yml is inside the TriTry-ncRNA folder.
 ```
 conda env create -f tritry-ncrna.yml
-source activate UTRme
+source activate tritry-ncrna
 ```
 ### Installation of optional tools
 
