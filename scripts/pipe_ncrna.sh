@@ -250,5 +250,9 @@ cd "${dir_tool}/ptRNApred1.0" && perl perl-start.pl -i "${output_base}/fasta_ncr
 echo "Run tRNAscan"
 tRNAscan-SE -G -o "${output_base}/tRNAscan-output.tab" -f "${output_base}/tRNAscan_structure" -q "${output_base}/fasta_ncrna.fasta"
 
-echo "Run processing PORTRAIT & ptRNApred1 & tRNAscan"
-python3 "${path_script}/10_postprocessing_ncrna.py" "${output_base}/df_allncrna.tab" "${output_base}/fasta_ncrna.fasta_results_all.scores" "${output_base}/output_ptrnapred1.txt" "${output_base}/tRNAscan-output.tab"
+echo "Run snoscan"
+cd "${dir_tool}/snoscan/snoscan-0.9.1" && ./snoscan "${dir_tool}/snoscan/snoscan-0.9.1/Lb-rRNA.fa" "${output_base}/fasta_ncrna.fasta" > "${output_base}/output_snoscan.txt"
+
+echo "Run processing PORTRAIT & ptRNApred1 & tRNAscan & snoscan"
+python3 "${path_script}/10_postprocessing_ncrna.py" "${output_base}/df_allncrna.tab" "${output_base}/fasta_ncrna.fasta_results_all.scores" "${output_base}/output_ptrnapred1.txt" "${output_base}/tRNAscan-output.tab" "${output_base}/output_snoscan.txt"
+
