@@ -28,6 +28,10 @@ TriTry-ncRNA users should have the following minimal input files:
 - genome.fasta (-fasta): Reference genome FASTA file.
 - genome.gff (-gff): Annotation GFF file.
 
+Optional input files:
+- UTRme_fiveutr.tsv (-utr5) : Annotation file for 5' UTRs.
+- UTRme_threeutr.tsv (-utr3): Annotation file for 3' UTRs.
+
 ## Installation and requirements
 The following software and libraries must be installed on your machine:
 * Fastqc
@@ -124,10 +128,14 @@ bash pipe_ncrna.sh -dir_list /path/to/TriTry-ncRNA/test/listdir.txt -output /pat
 
 ```
 
+## Output Files Description
 
-
-## Output Files
-
+| File Extension | Description |
+|---------------|-------------|
+| **.gff**  | Annotation GFF Format file containing annotations, identified ncRNA regions. |
+| **.bed**  | Browser Extensible Data file used for genomic intervals and features of ncRNA regions. |
+| **.tab**  | Tab-delimited file containing the prediction of ncRNA regions in each life stages by exression level, in addition contain the final characterization. |
+| **.fasta** | FASTA format file containing nucleotide sequences of identified ncRNAs. |
 
 ## Command line options
 
