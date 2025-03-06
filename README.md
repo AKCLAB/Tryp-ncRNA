@@ -28,7 +28,7 @@ TriTry-ncRNA users should have the following minimal input files:
 - genome.fasta (-fasta): Reference genome FASTA file.
 - genome.gff (-gff): Annotation GFF file.
 
-Optional input files:
+Optional input files using UTRme tool:
 - UTRme_fiveutr.tsv (-utr5) : Annotation file for 5' UTRs.
 - UTRme_threeutr.tsv (-utr3): Annotation file for 3' UTRs.
 
@@ -114,6 +114,16 @@ cd ViennaRNA-2.4.17
 ./configure --without-perl --without-python --without-python2 --without-forester --without-rnalocmin \
 make && make install
 ```
+
+UTRme
+```
+git clone https://github.com/sradiouy/UTRme.git
+cd UTRme
+conda env create -f utrme.yml
+source activate UTRme
+python3 utrme.py Example_configuration_file.txt
+```
+
 
 ## Invoking TriTry-ncRNA
 ```
