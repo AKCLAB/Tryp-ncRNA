@@ -42,6 +42,7 @@ The following software and libraries must be installed on your machine:
 * ptRNApred1.0 (optional)
 * tRNAscan-SE (optional)
 * snoscan (optional)
+* Dependences (regex xlsxwriter matplotlib seaborn scipy pysam fuzzywuzzy biopython cutadapt)
 
 ## How to install TriTry-ncRNA?
 
