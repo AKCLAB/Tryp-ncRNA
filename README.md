@@ -28,7 +28,7 @@ TriTry-ncRNA users should have the following minimal input files:
 - genome.fasta (-fasta): Reference genome FASTA file.
 - genome.gff (-gff): Annotation GFF file.
 
-## Instalation and requirements
+## Installation and requirements
 The following software and libraries must be installed on your machine:
 * Fastqc
 * Bowtie2 
@@ -41,17 +41,73 @@ The following software and libraries must be installed on your machine:
 * portrait-1.1 (optional)
 * ptRNApred1.0 (optional)
 * tRNAscan-SE (optional)
+* snoscan (optional)
 
+## How to install TriTry-ncRNA?
 
-## Installation
-Clone the TriTry-ncRNA git:
+### You can use the git command:
+```
+sudo apt-get install git
+````
 ```
 git clone https://github.com/AKCLAB/TriTry-ncRNA.git
+cd TriTry-ncRNA
 ```
 
-Go to scripts directory
+### Then, if you do not have conda/miniconda installed, you must first install it. 
 ```
-cd TriTry-ncRNA
+wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash Miniconda3-latest-Linux-x86_64.sh
+```
+Once conda/miniconda is installed, you must create an enviroment and install TriTry-ncRNA.  The file tritry-ncrna.yml is inside the TriTry-ncRNA folder.
+```
+conda env create -f tritry-ncrna.yml
+source activate UTRme
+```
+### Installation of optional tools
+
+tRNAscan-SE
+```
+git clone https://github.com/UCSC-LoweLab/tRNAscan-SE.git
+cd tRNAscan-SE
+./configure
+make install
+apt install infernal
+sudo ln -s /usr/bin/cmsearch /usr/local/bin/cmsearch
+sudo ln -s /usr/bin/cmscan /usr/local/bin/cmscan
+```
+
+PORTRAIT
+```
+wget https://www.bioinformatics.org/portrait/download/portrait.tar.gz
+tar -zxvf portrait.tar.gz
+wget https://www.bioinformatics.org/portrait/download/angle.tar.gz
+tar -zxvf angle.tar.gz
+wget https://www.bioinformatics.org/portrait/download/cast-linux.tar.gz
+tar -zxvf cast-linux.tar.gz
+chmod +x cast-linux
+wget https://www.bioinformatics.org/portrait/download/libsvm-2.84.tar.gz
+tar -zxvf libsvm-2.84.tar.gz
+cd libsvm-2.84
+make
+sudo chmod +x /home/raquelh/programs/cast-linux/cast-linux
+sudo chmod +x /home/raquelh/programs/angle/angle
+sudo chmod +x /home/raquelh/programs/libsvm-2.84/svm-predict
+sudo chmod +x /home/raquelh/programs/libsvm-2.84/svm-train
+export PATH=$PATH:/home/raquelh/programs/cast-linux
+export PATH=$PATH:/home/raquelh/programs/angle
+export PATH=$PATH:/home/raquelh/programs/libsvm-2.84
+```
+
+ptRNApred
+```
+wget http://www.ptrnapred.org/ptRNApred1.0.zip
+unzip ptRNApred1.0.zip
+wget https://www.tbi.univie.ac.at/RNA/download/sourcecode/2_7_x/ViennaRNA-2.7.0.tar.gz
+tar -zxvf ViennaRNA-2.7.0.tar.gz
+cd ViennaRNA-2.4.17 
+./configure --without-perl --without-python --without-python2 --without-forester --without-rnalocmin \
+make && make install
 ```
 
 ## Invoking TriTry-ncRNA
