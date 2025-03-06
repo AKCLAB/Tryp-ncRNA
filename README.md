@@ -91,13 +91,13 @@ wget https://www.bioinformatics.org/portrait/download/libsvm-2.84.tar.gz
 tar -zxvf libsvm-2.84.tar.gz
 cd libsvm-2.84
 make
-sudo chmod +x /home/raquelh/programs/cast-linux/cast-linux
-sudo chmod +x /home/raquelh/programs/angle/angle
-sudo chmod +x /home/raquelh/programs/libsvm-2.84/svm-predict
-sudo chmod +x /home/raquelh/programs/libsvm-2.84/svm-train
-export PATH=$PATH:/home/raquelh/programs/cast-linux
-export PATH=$PATH:/home/raquelh/programs/angle
-export PATH=$PATH:/home/raquelh/programs/libsvm-2.84
+sudo chmod +x /path/to/cast-linux/cast-linux
+sudo chmod +x /path/to/programs/angle/angle
+sudo chmod +x /path/to/programs/libsvm-2.84/svm-predict
+sudo chmod +x /path/to/programs/libsvm-2.84/svm-train
+export PATH=$PATH:/path/to/programs/cast-linux
+export PATH=$PATH:/path/to/programs/angle
+export PATH=$PATH:/path/to/programs/libsvm-2.84
 ```
 
 ptRNApred
