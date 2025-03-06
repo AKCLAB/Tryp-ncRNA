@@ -71,7 +71,8 @@
   9_remake_output.py: Create gff and bed format output files.
   python3 9_remake_output.py "${output_base}/unique_sort_allncrna.tab" "${output_base}/df_allncrna.tab" "${output_base}/df_allncrna.bed df_allncrna.gff"
 
-  Run processing PORTRAIT & ptRNApred1 & tRNAscan
+  Run processing PORTRAIT & ptRNApred1 & tRNAscan & snoscan
   10_postprocessing_ncrna.py:complement with characterization of non-coding RNA.
-  python3 "${path_script}/10_postprocessing_ncrna.py" "${output_base}/df_allncrna.tab" "${output_base}/fasta_ncrna.fasta_results_all.scores" "${output_base}/output_ptrnapred1.txt" "${output_base}/tRNAscan-output.tab"
+  python3 "${path_script}/10_postprocessing_ncrna.py" "${output_base}/df_allncrna.tab" "${output_base}/fasta_ncrna.fasta_results_all.scores" "${output_base}/output_ptrnapred1.txt" "${output_base}/tRNAscan-output.tab" "${output_base}/output_snoscan.txt"
+
 
