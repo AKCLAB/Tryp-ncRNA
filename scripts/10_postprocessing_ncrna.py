@@ -1,8 +1,8 @@
 import sys
 import pandas as pd
 
-# python3 10_postprocessing_ncrna.py df_allncrna.tab fasta_ncrna.fasta_results_all.scores output_ptrnapred1.txt tRNAscan-output.tab
-def process_file(ncrna_tab, out_portrait, out_tpredrna, out_trnascan, out_snoscan):
+# python3 10_postprocessing_ncrna.py df_allncrna.tab fasta_ncrna.fasta_results_all.scores output_ptrnapred1.txt tRNAscan-output.tab output_snoscan.txt df_allncrna_final.tab
+def process_file(ncrna_tab, out_portrait, out_tpredrna, out_trnascan, out_snoscan, out_ncrna_tab):
 
     # Importar o arquivo usando pandas
     ncrna = pd.read_csv(ncrna_tab, header=None,  sep='\t', names=["nc_chr","nc_coordi","nc_coordf","match_id","nc_strand","match_length","nc_location","nc_sentido","nc_position", "nc_lenght", "nc_id"])
@@ -40,7 +40,7 @@ def process_file(ncrna_tab, out_portrait, out_tpredrna, out_trnascan, out_snosca
     snoscan.reset_index(drop=True, inplace=True)
     merged_df4 = pd.merge(merged_df3, snoscan[['nc_id', 'snoscan']], on='nc_id', how='left')
     merged_df4['snoscan'] = merged_df4['snoscan'].fillna(0)
-    merged_df4.to_csv(ncrna_tab, sep='\t', index=False, header=False)
+    merged_df4.to_csv(out_ncrna_tab, sep='\t', index=False, header=False)
 
 # Importar e executar o script
 if __name__ == "__main__":
@@ -49,4 +49,5 @@ if __name__ == "__main__":
     out_tpredrna = sys.argv[3]
     out_trnascan = sys.argv[4]
     out_snoscan = sys.argv[5]
-    process_file(ncrna_tab, out_portrait, out_tpredrna, out_trnascan, out_snoscan)
+    out_ncrna_tab = sys.argv[6]
+    process_file(ncrna_tab, out_portrait, out_tpredrna, out_trnascan, out_snoscan, out_ncrna_tab)
