@@ -43,7 +43,8 @@ def process_file(transcript_ncrna, transcript_lncrna, gff, out_file, out_file2):
                     # Split the line into columns
                     cds_fields = cds_row.strip().split("\t")
                     # Check if the line is a CDS entry
-                    if cds_fields[2] == "CDS":
+                    if cds_fields[2] in ["CDS", "pseudogene", "exon"]:
+                    #f cds_fields[2] == "CDS":
                         # Extract the ID from the 9th column (index 8)
                         cds_id = extract_info(cds_fields[8])
                         #print(cds_id)
@@ -86,7 +87,8 @@ def process_file(transcript_ncrna, transcript_lncrna, gff, out_file, out_file2):
                     # Split the line into columns
                     cds_fields = cds_row.strip().split("\t")
                     # Check if the line is a CDS entry
-                    if cds_fields[2] == "CDS":
+                    if cds_fields[2] in ["CDS", "pseudogene", "exon"]:
+                    #f cds_fields[2] == "CDS":
                         # Extract the ID from the 9th column (index 8)
                         cds_id = extract_info(cds_fields[8])
                         cds_chr, cds_coordi, cds_coordf, cds_strand = cds_fields[0],  int(cds_fields[3]), int(cds_fields[4]), cds_fields[6]
