@@ -50,8 +50,5 @@ if __name__ == "__main__":
     out_trnascan = sys.argv[4]
     out_snoscan = sys.argv[5]
     out_ncrna_tab = sys.argv[6]
-<<<<<<< HEAD
     process_file(ncrna_tab, out_portrait, out_tpredrna, out_trnascan, out_snoscan, out_ncrna_tab)
-=======
-    process_file(ncrna_tab, out_portrait, out_tpredrna, out_trnascan, out_snoscan, out_ncrna_tab)
->>>>>>> c215a4c18c4adf5601c05476f2798dace9aa9ddb
+
