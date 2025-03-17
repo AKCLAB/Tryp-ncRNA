@@ -1,0 +1,78 @@
+
+
+#Description of pipeline
+
+```
+ pipe_ncrna.sh -dir_list <file> -output <path> -db <path> -threads <number> -reffasta <file> -refgff <file> -utr5 <file> -utr3 <file> -dir_tool <path>"
+```
+ -dir_list: File containing a list of directories to process containig the fastq files
+ -output_base: Base directory where outputs will be stored
+ -db: Pfam database
+ -threads: Number of threads to use
+ -fasta: Reference genome FASTA file
+ -gff: Annotation GFF file
+ -utr5: Annotation file for 5' UTRs (optional)
+ -utr3: Annotation file for 3' UTRs (optional)
+ -dir_tool Directory carrying the tools
+  
+ listdir.txt format 
+ 
+  
+ ## First steps of pipeline
+  Confer or create index of reference file;
+  Confer or create directory with input files from listdir.txt 
+  Confer or download the Pfam database
+  
+ ## Loop by directory 
+  Confere or create output directory "_out"
+  create name_samples, list with all name samples
+  Confer or run the mapping, sort and index of each samples against the reference genome
+  Merge all biological repetions by sample using picard
+  Count the coverage by base 
+
+  Call 2_identify_transcript.py script
+  To identify in all chromossomal positions the coverage equal & up of 50x or 100x reads for strand + & - strand.
+  python3 2_identify_transcript.py "${output_folder}/count_igv.wig" "$output_folder" -threshold 100,50
+
+  Call 3_identify_possible_ncRNA_lncRNA.py script
+  To identify lnc-RNA (>200pb) with >= 50x cov and snc-RNA (<200 pb) with >= 100x cov.
+  python3 3_identify_possible_ncRNA_lncRNA.py "${output_folder}/transcript_100cov.txt" "${output_folder}/transcript_50cov.txt" "${output_folder}/possible_ncRNA.txt" "${output_folder}/possible_lncRNA.txt"
+
+  Call 4_annotation_ncRNA_lncRNA.py script
+  To identify the location of non-coding RNA in coding or intergenic regions. 
+  python3 4_annotation_ncRNA_lncRNA.py "${output_folder}/possible_ncRNA.txt" "${output_folder}/possible_lncRNA.txt" "$gff" "${output_folder}/annotation_ncRNA.txt" "${output_folder}/annotation_lncRNA.txt"
+
+  Call 5_identify_overlap_nc-lncRNA.py script
+  To identify the snc-RNA overlapping lnc-RNA.
+  python3 5_identify_overlap_nc-lncRNA.py "${output_folder}/annotation_ncRNA.txt" "${output_folder}/annotation_lncRNA.txt" "${output_folder}/annotation_ncRNA_final.txt"
+
+  Call 6_identify_ptu.py script
+  To identify PTU regions 
+  python3 6_identify_ptu.py "$gff" possible_ptu.txt
+
+  Call 7_parser_UTR_sense_antisense.py script
+  To add information of sense of non-coding RNA in relation from PTUs, and overlapping of non-coding RNA in UTR regions.
+  python3 7_parser_UTR_sense_antisense.py "${output_folder}/annotation_ncRNA_final.txt" "${output_folder}/annotation_lncRNA.txt" possible_ptu.txt "${output_folder}/ncRNAs_location_direction.bed" "$utr5" "$utr3"
+
+  To extract fasta sequences of all non-coding RNA
+  bedtools getfasta -fi "$fasta" -bed "${output_folder}/ncRNAs_location_direction.bed" -fo "${output_folder}/all_ncrna.fasta" -name+
+
+  blast between non-coding RNA and pfam proteins
+  diamond blastx --query "${output_folder}/all_ncrna.fasta" --db "${database}/pfam_database.dmnd" --out "${output_folder}/ncrna_pfam-cov80-max1.tab" --outfmt 6 qseqid sseqid pident qcovhsp length qlen slen qstart qend sstart send evalue bitscore stitle --id 90 --query-cover 80 --evalue 1e-5 --threads "$threads" --max-target-seqs 1
+ 
+  Call 8_select_ncrna.py script
+  Selection of the non-coding RNA by each directory
+  python3 8_select_ncrna.py "${output_folder}/ncRNAs_location_direction.bed" "${output_folder}/ncrna_pfam-cov80-max1.tab" "${output_folder}/final_ncRNAs_location_direction.bed"
+  
+  ## Last steps of pipeline
+  Merge, sort all non-coding RNA from each directory
+
+  Call remake_output.py script
+  9_remake_output.py: Create gff and bed format output files.
+  python3 9_remake_output.py "${output_base}/unique_sort_allncrna.tab" "${output_base}/df_allncrna.tab" "${output_base}/df_allncrna.bed df_allncrna.gff"
+
+  Run processing PORTRAIT & ptRNApred1 & tRNAscan & snoscan
+  10_postprocessing_ncrna.py:complement with characterization of non-coding RNA.
+  python3 "${path_script}/10_postprocessing_ncrna.py" "${output_base}/df_allncrna.tab" "${output_base}/fasta_ncrna.fasta_results_all.scores" "${output_base}/output_ptrnapred1.txt" "${output_base}/tRNAscan-output.tab" "${output_base}/output_snoscan.txt"
+
+
