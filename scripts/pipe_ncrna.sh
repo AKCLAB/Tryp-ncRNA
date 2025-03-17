@@ -149,18 +149,18 @@ while IFS= read -r subdir; do
     echo "Processing complete."
 
     # String withs name sample separated by spaces and -I
-    #inputs=""
-    #for sample in "${name_samples[@]}"; do
-    #    inputs+=" I=${output_folder}/mapped_${sample}_sorted.bam"
-    #done
+    inputs=""
+    for sample in "${name_samples[@]}"; do
+        inputs+=" I=${output_folder}/mapped_${sample}_sorted.bam"
+    done
 
     echo "Running Picard"
-    #picard MergeSamFiles ${inputs} USE_THREADING=true O="${output_folder}/transcript_all.sorted.merged_files.bam"
-    #picard BuildBamIndex I="${output_folder}/transcript_all.sorted.merged_files.bam"
+    picard MergeSamFiles ${inputs} USE_THREADING=true O="${output_folder}/transcript_all.sorted.merged_files.bam"
+    picard BuildBamIndex I="${output_folder}/transcript_all.sorted.merged_files.bam"
     #echo "File picard successfully"
 
     echo "Running igvtools"
-    #igvtools count --strands second --windowSize 1 "${output_folder}/transcript_all.sorted.merged_files.bam" "${output_folder}/count_igv.wig,count_igv.tdf" "$fasta"
+    igvtools count --strands second --windowSize 1 "${output_folder}/transcript_all.sorted.merged_files.bam" "${output_folder}/count_igv.wig,count_igv.tdf" "$fasta"
     echo "File igvtools successfully"
 
     echo "Running 2_identify_transcript.py"
@@ -211,7 +211,7 @@ done < "$dir_list"
 
 echo "cat all bed outputs, sort and merge all unique anotates ncRNA"
 allstages=""
-Loop through directories ending with "_out"
+#Loop through directories ending with "_out"
 for subdir in "$output_base"/*_out; do
     # Ensure it's a directory
     if [ -d "$subdir" ]; then
