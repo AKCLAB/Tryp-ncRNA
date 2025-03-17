@@ -32,7 +32,7 @@ def process_file(transcript_100, transcript_50, out_file, out_file2):
                 tra_i, tra_chr, tra_coordi, tra_coordf, tra_strand, tra_cov = tra_fields[0], tra_fields[1], int(tra_fields[2]), int(tra_fields[3]), tra_fields[4], float(tra_fields[5])
                 tra_length = (tra_coordf - tra_coordi) + 1
                 if 50 <= tra_length <= 200:
-                    fh_ncRNA.write(f"{tra_chr}\t{tra_coordi}\t{tra_coordf}\t{ltra_chr}_{tra_i}\t.\t{tra_strand}\t{tra_length}\n")
+                    fh_ncRNA.write(f"{tra_chr}\t{tra_coordi}\t{tra_coordf}\t{tra_chr}_{tra_i}\t.\t{tra_strand}\t{tra_length}\n")
 
 
 # Import INPUT files

@@ -11,7 +11,7 @@ TriTry-ncRNA is a pipeline in order to identify putative non-coding RNAs in Tryp
 * 7_parser_UTR_sense_antisense.py: Add information of sense of non-coding RNA in relation from PTUs and UTR regions.
 * 8_select_ncrna.py: Final selection by directory.
 * 9_remake_output.py: Create gff, tab and bed format output files.
-* 10_postprocessing_ncrna.py : complement with characterization of non-coding RNA
+* 10_postprocessing_ncrna.py: complement with characterization of non-coding RNA
 
 
 The pipeline process all the python code by directory, each directory can represent a life cycle, that contain the biological repetions in fastq format (*_1/2.fastq.gz) and a size of aproximately 72 Mpb (~5 Gb) dependent on therholds 50x and 100x.

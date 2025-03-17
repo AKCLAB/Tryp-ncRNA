@@ -41,16 +41,18 @@ def process_file(file, threshold, fh2, out_file):
             coord = fields[0]
             qtd_pos = float(fields[1])  # Column for "pos"
             qtd_neg = float(fields[2])  # Column for "neg"
-
             # Process positive strand
             if qtd_pos >= threshold and start_pos == 0:
                 start_pos = 1
                 coordi_pos = coord  # Save start coordinate
+
                 i_pos += 1
             elif start_pos == 1 and qtd_pos < threshold:
                 fh2.write(f"ncRNA{i_pos}\t{chr}\t{coordi_pos}\t{prev_coord}\t+\t{threshold}\n")
                 start_pos = 0
                 coordi_pos = None
+                #IF coordi_pos = prev_coord + OR +1 OR +2 
+                #fh2.write(f"ncRNA{i_pos}\t{chr}\t{coordi_pos}\t{prev_coord}\t+\t{threshold}\n")
 
             # Process negative strand
             if qtd_neg >= threshold and start_neg == 0:

@@ -1,4 +1,3 @@
-#!/bin/bash
 # Function to display usage information
 usage() {
     echo "Usage: $0 -dir_list <file> -output <path> -db <path> -threads <number> -reffasta <file> -refgff <file> -utr5 <file> -utr3 <file> -dir_tool <path>"
@@ -78,7 +77,7 @@ if [ ! -f "$database/pfam_database.dmnd" ]; then
     mkdir -p "$database"
     wget -O "$database/Pfam-A.fasta.gz" https://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.fasta.gz
     gunzip -c "$database/Pfam-A.fasta.gz" > "$database/Pfam-A.fasta"
-    makeblastdb -in "$database/Pfam-A.fasta" -dbtype prot -out "$database/pfam_database"
+    diamond makedb --in "$database/Pfam-A.fasta" -d "$database/pfam_database"
     rm "$database/Pfam-A.fasta.gz"
 fi
 echo "Pfam database created successfully"
@@ -130,7 +129,7 @@ while IFS= read -r subdir; do
             continue
         fi
         # Run bowtie2
-    #    bowtie2 \
+        bowtie2 \
         -N 1 \
         -p "$threads" \
         --local \
@@ -150,18 +149,18 @@ while IFS= read -r subdir; do
     echo "Processing complete."
 
     # String withs name sample separated by spaces and -I
-    inputs=""
-    for sample in "${name_samples[@]}"; do
-        inputs+=" I=${output_folder}/mapped_${sample}_sorted.bam"
-    done
+    #inputs=""
+    #for sample in "${name_samples[@]}"; do
+    #    inputs+=" I=${output_folder}/mapped_${sample}_sorted.bam"
+    #done
 
     echo "Running Picard"
-    picard MergeSamFiles ${inputs} USE_THREADING=true O="${output_folder}/transcript_all.sorted.merged_files.bam"
-    picard BuildBamIndex I="${output_folder}/transcript_all.sorted.merged_files.bam"
+    #picard MergeSamFiles ${inputs} USE_THREADING=true O="${output_folder}/transcript_all.sorted.merged_files.bam"
+    #picard BuildBamIndex I="${output_folder}/transcript_all.sorted.merged_files.bam"
     #echo "File picard successfully"
 
     echo "Running igvtools"
-    igvtools count --strands second --windowSize 1 "${output_folder}/transcript_all.sorted.merged_files.bam" "${output_folder}/count_igv.wig,count_igv.tdf" "$fasta"
+    #igvtools count --strands second --windowSize 1 "${output_folder}/transcript_all.sorted.merged_files.bam" "${output_folder}/count_igv.wig,count_igv.tdf" "$fasta"
     echo "File igvtools successfully"
 
     echo "Running 2_identify_transcript.py"
@@ -212,7 +211,7 @@ done < "$dir_list"
 
 echo "cat all bed outputs, sort and merge all unique anotates ncRNA"
 allstages=""
-#Loop through directories ending with "_out"
+Loop through directories ending with "_out"
 for subdir in "$output_base"/*_out; do
     # Ensure it's a directory
     if [ -d "$subdir" ]; then
@@ -250,5 +249,8 @@ cd "${dir_tool}/ptRNApred1.0" && perl perl-start.pl -i "${output_base}/fasta_ncr
 echo "Run tRNAscan"
 tRNAscan-SE -G -o "${output_base}/tRNAscan-output.tab" -f "${output_base}/tRNAscan_structure" -q "${output_base}/fasta_ncrna.fasta"
 
-echo "Run processing PORTRAIT & ptRNApred1 & tRNAscan"
-python3 "${path_script}/10_postprocessing_ncrna.py" "${output_base}/df_allncrna.tab" "${output_base}/fasta_ncrna.fasta_results_all.scores" "${output_base}/output_ptrnapred1.txt" "${output_base}/tRNAscan-output.tab"
+echo "Run snoscan"
+cd "${dir_tool}/snoscan/snoscan-0.9.1" && ./snoscan "${dir_tool}/snoscan/snoscan-0.9.1/Lb-rRNA.fa" "${output_base}/fasta_ncrna.fasta" > "${output_base}/output_snoscan.txt"
+
+echo "Run processing PORTRAIT & ptRNApred1 & tRNAscan & snoscan"
+python3 "${path_script}/10_postprocessing_ncrna.py" "${output_base}/df_allncrna.tab" "${output_base}/fasta_ncrna.fasta_results_all.scores" "${output_base}/output_ptrnapred1.txt" "${output_base}/tRNAscan-output.tab" "${output_base}/output_snoscan.txt" "${output_base}/df_allncrna_final.tab"
