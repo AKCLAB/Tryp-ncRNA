@@ -252,5 +252,8 @@ tRNAscan-SE -G -o "${output_base}/tRNAscan-output.tab" -f "${output_base}/tRNAsc
 echo "Run snoscan"
 cd "${dir_tool}/snoscan/snoscan-0.9.1" && ./snoscan "${dir_tool}/snoscan/snoscan-0.9.1/Lb-rRNA.fa" "${output_base}/fasta_ncrna.fasta" > "${output_base}/output_snoscan.txt"
 
+echo "Run rnacon"
+cd "${dir_tool}/RNAcon_standalone" && perl RNAcon.pl  -i "${output_base}/fasta_ncrna.fasta" -t "$threads"  -o "${output_base}/output_rnacon.txt"
+
 echo "Run processing PORTRAIT & ptRNApred1 & tRNAscan & snoscan"
-python3 "${path_script}/10_postprocessing_ncrna.py" "${output_base}/df_allncrna.tab" "${output_base}/fasta_ncrna.fasta_results_all.scores" "${output_base}/output_ptrnapred1.txt" "${output_base}/tRNAscan-output.tab" "${output_base}/output_snoscan.txt" "${output_base}/df_allncrna_final.tab"
+python3 "${path_script}/10_postprocessing_ncrna.py" "${output_base}/df_allncrna.tab" "${output_base}/fasta_ncrna.fasta_results_all.scores" "${output_base}/output_ptrnapred1.txt" "${output_base}/tRNAscan-output.tab" "${output_base}/output_snoscan.txt" "${output_base}/output_rnacon.txt" "${output_base}/df_allncrna_final.tab"

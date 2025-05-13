@@ -1,8 +1,9 @@
 import sys
 import pandas as pd
+import re
 
-# python3 10_postprocessing_ncrna.py df_allncrna.tab fasta_ncrna.fasta_results_all.scores output_ptrnapred1.txt tRNAscan-output.tab output_snoscan.txt df_allncrna_final.tab
-def process_file(ncrna_tab, out_portrait, out_tpredrna, out_trnascan, out_snoscan, out_ncrna_tab):
+# python3 10_postprocessing_ncrna.py df_allncrna.tab fasta_ncrna.fasta_results_all.scores output_ptrnapred1.txt tRNAscan-output.tab output_snoscan.txt output_rnacon.txt df_allncrna_final.tab
+def process_file(ncrna_tab, out_portrait, out_tpredrna, out_trnascan, out_snoscan, out_rnacon, out_ncrna_tab):
 
     # Importar o arquivo usando pandas
     ncrna = pd.read_csv(ncrna_tab, header=None,  sep='\t', names=["nc_chr","nc_coordi","nc_coordf","match_id","nc_strand","match_length","nc_location","nc_sentido","nc_position", "nc_lenght", "nc_id"])
@@ -42,7 +43,27 @@ def process_file(ncrna_tab, out_portrait, out_tpredrna, out_trnascan, out_snosca
     snoscan_uniq = snoscan.drop_duplicates(subset=['nc_id'])
     merged_df4 = pd.merge(merged_df3, snoscan_uniq[['nc_id', 'snoscan']], on='nc_id', how='left')
     merged_df4['snoscan'] = merged_df4['snoscan'].fillna(0)
-    merged_df4.to_csv(out_ncrna_tab, sep='\t', index=False, header=False)
+
+    #post=processing the output rnacon
+
+    with open(out_rnacon, encoding='utf-8') as f:
+        lines = f.readlines()[7:]
+    lines = [line.strip() for line in lines if line.strip() and not line.startswith('#')]
+
+    # Processa cada linha separando por dois ou mais espaços ou tabulações
+    data = []
+    for line in lines:
+        parts = re.split(r'\s{2,}|\t+', line)
+        while len(parts) < 3:
+            parts.append(None)
+        data.append(parts[:3])  # Garante no máximo 3 colunas
+
+    # Cria DataFrame
+    rnacon = pd.DataFrame(data, columns=["id", "rnacon", "Classification_rnacon"])
+    rnacon['nc_id'] = rnacon['id'].str.extract(r'\.(.*?)::')
+    rnacon['nc_id'] = rnacon['nc_id'].str.strip().astype(str)
+    merged_df5 = pd.merge(merged_df4, rnacon[['nc_id', 'rnacon']], on='nc_id', how='left')
+    merged_df5.to_csv(out_ncrna_tab, sep='\t', index=False, header=False)
 
 # Importar e executar o script
 if __name__ == "__main__":
@@ -51,6 +72,7 @@ if __name__ == "__main__":
     out_tpredrna = sys.argv[3]
     out_trnascan = sys.argv[4]
     out_snoscan = sys.argv[5]
-    out_ncrna_tab = sys.argv[6]
-    process_file(ncrna_tab, out_portrait, out_tpredrna, out_trnascan, out_snoscan, out_ncrna_tab)
+    out_rnacon = sys.argv[6]
+    out_ncrna_tab = sys.argv[7]
+    process_file(ncrna_tab, out_portrait, out_tpredrna, out_trnascan, out_snoscan, out_rnacon, out_ncrna_tab)
 
