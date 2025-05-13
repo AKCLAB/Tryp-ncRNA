@@ -29,8 +29,9 @@ def process_file(ncrna_tab, out_portrait, out_tpredrna, out_trnascan, out_snosca
     trna = trna.iloc[2:,:1]
     trna = trna.reset_index()
     trna.columns= ["name", "tRNAscan"]
-    trna[['nc_id']] = trna['name'].str.extract(r'^([\w_.]+)::')                       
-    merged_df3 = pd.merge(merged_df2, trna[['nc_id', 'tRNAscan']], on='nc_id', how='left')
+    trna[['nc_id']] = trna['name'].str.extract(r'^([\w_.]+)::')
+    trna_uniq = trna.drop_duplicates(subset=['nc_id'])                
+    merged_df3 = pd.merge(merged_df2, trna_uniq[['nc_id', 'tRNAscan']], on='nc_id', how='left')
     merged_df3['tRNAscan'] = merged_df3['tRNAscan'].fillna(0)
     
     #post-processing the output snoscan 
@@ -38,7 +39,8 @@ def process_file(ncrna_tab, out_portrait, out_tpredrna, out_trnascan, out_snosca
     snoscan = output_snoscan[output_snoscan['column'].str.contains(">>")].copy()
     snoscan[['nc_id', 'snoscan']] = snoscan['column'].str.extract(r'>>\s*([\w\d_]+)::.*?\s+([\d]+\.\d+)')
     snoscan.reset_index(drop=True, inplace=True)
-    merged_df4 = pd.merge(merged_df3, snoscan[['nc_id', 'snoscan']], on='nc_id', how='left')
+    snoscan_uniq = snoscan.drop_duplicates(subset=['nc_id'])
+    merged_df4 = pd.merge(merged_df3, snoscan_uniq[['nc_id', 'snoscan']], on='nc_id', how='left')
     merged_df4['snoscan'] = merged_df4['snoscan'].fillna(0)
     merged_df4.to_csv(out_ncrna_tab, sep='\t', index=False, header=False)
 

@@ -48,24 +48,31 @@ def process_file(sort_allncrna, allncrna_tab, allncrna_bed, allncrna_gff):
     ncrna_ncRNA['info_ncrna'] = "ID="+allncrna_v2['ncrna_name']+":ncRNA;Parent="+allncrna_v2['ncrna_name']+";description=Strand:minus Length:"+allncrna_v2['nc_clength']+" Position:"
     ncrna_ncRNA.insert(loc=1, column ="method", value="InHouseMethodology")
     ncrna_ncRNA.insert(loc=2, column ="molecule", value="ncRNA")
-    ncrna_ncRNA.insert(loc=4, column = "", value=".")
-    ncrna_ncRNA.insert(loc=6, column = " ", value=".")
+    ncrna_ncRNA.insert(loc=5, column = "", value=".")
+    ncrna_ncRNA.insert(loc=7, column = " ", value=".")
 
     ncrna_exon = allncrna_v2[['nc_chr', 'nc_coordi', 'nc_coordf', 'nc_strand']]
     ncrna_exon['info_ncrna'] = "ID="+allncrna_v2['ncrna_name']+";Parent="+allncrna_v2['ncrna_name']+":ncRNA"
     ncrna_exon.insert(loc=1, column ="method", value="InHouseMethodology")
     ncrna_exon.insert(loc=2, column ="molecule", value="exon")
-    ncrna_exon.insert(loc=4, column = "", value=".")
-    ncrna_exon.insert(loc=6, column = " ", value=".")
+    ncrna_exon.insert(loc=5, column = "", value=".")
+    ncrna_exon.insert(loc=7, column = " ", value=".")
 
     ncrna_gene = allncrna_v2[['nc_chr', 'nc_coordi', 'nc_coordf', 'nc_strand']]
     ncrna_gene['info_ncrna'] = "ID="+allncrna_v2['ncrna_name']+";description=Strand:minus Length:"+allncrna_v2['nc_clength']+" Position:"
     ncrna_gene.insert(loc=1, column ="method", value="InHouseMethodology")
     ncrna_gene.insert(loc=2, column ="molecule", value="gene")
-    ncrna_gene.insert(loc=4, column = "", value=".")
-    ncrna_gene.insert(loc=6, column = " ", value=".")
+    ncrna_gene.insert(loc=5, column = "", value=".")
+    ncrna_gene.insert(loc=7, column = " ", value=".")
+    
+    ncrna_peptide = allncrna_v2[['nc_chr', 'nc_coordi', 'nc_coordf', 'nc_strand']]
+    ncrna_peptide['info_ncrna'] = "ID="+allncrna_v2['ncrna_name']+";description=Strand:minus Length:"+allncrna_v2['nc_clength']+" Position:"
+    ncrna_peptide.insert(loc=1, column ="method", value="InHouseMethodology")
+    ncrna_peptide.insert(loc=2, column ="molecule", value="polypeptide")
+    ncrna_peptide.insert(loc=5, column = "", value=".")
+    ncrna_peptide.insert(loc=7, column = " ", value=".")
 
-    ncrna_gff = pd.concat([ncrna_exon, ncrna_gene, ncrna_ncRNA], axis=0)  # axis=0 means stacking rows
+    ncrna_gff = pd.concat([ncrna_exon, ncrna_gene, ncrna_ncRNA, ncrna_peptide], axis=0)  # axis=0 means stacking rows
     ncrna_gff = ncrna_gff.sort_values(by=['nc_chr', 'nc_coordi'], ascending=[True, True])
     ncrna_gff.to_csv(allncrna_gff, sep='\t', index=False, header=False)
 
