@@ -11,7 +11,7 @@ import sys
 def process_file(ncrna_file, blast_tab, final_ncrna):
 
     # Importar o arquivo usando pandas
-    ncrna = pd.read_csv(ncrna_file, sep='\t', names=["nc_chr", "nc_coordi", "nc_coordf", "nc_id", "", "nc_strand","nc_length", "nc_location", "nc_sentido", "nc_position"], dtype={"nc_coordi": "str", "nc_coordf": "str"})
+    ncrna = pd.read_csv(ncrna_file, sep='\t', names=["nc_chr", "nc_coordi", "nc_coordf", "nc_id", "", "nc_strand","nc_length", "nc_sentido", "nc_position"], dtype={"nc_coordi": "str", "nc_coordf": "str"})
 
     # Combine the columns with separators
     ncrna['info_ncrna'] = ncrna['nc_id'] + "::" + ncrna['nc_chr'] + ":" + ncrna['nc_coordi'] + "-" + ncrna['nc_coordf']

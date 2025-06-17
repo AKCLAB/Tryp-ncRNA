@@ -6,7 +6,7 @@ import re
 def process_file(ncrna_tab, out_portrait, out_tpredrna, out_trnascan, out_snoscan, out_rnacon, out_ncrna_tab):
 
     # Importar o arquivo usando pandas
-    ncrna = pd.read_csv(ncrna_tab, header=None,  sep='\t', names=["nc_chr","nc_coordi","nc_coordf","match_id","nc_strand","match_length","nc_location","nc_sentido","nc_position", "nc_lenght", "nc_id"])
+    ncrna = pd.read_csv(ncrna_tab, header=None,  sep='\t', names=["nc_chr","nc_coordi","nc_coordf","match_id","nc_strand","match_length","nc_sentido","nc_position", "nc_lenght", "nc_id"])
     #post-processing the output PORTRAIT
     output = pd.read_csv(out_portrait, names = ["column"])
     #  extração deve começar imediatamente ">" ate ":" segundo grupo captura o valor decimal após os dois pontos,

@@ -14,7 +14,8 @@ usage() {
 }
 
 #bash pipe_ncrna.sh -dir_list listdir.txt -output /path/to/TriTry-ncRNA -db /path/to/TriTry-ncRNA/db -threads 20 -reffasta /path/to/work/TriTrypDB-30_LbraziliensisMHOMBR75M2903_Genome.fasta -refgff /path/to/work/TriTrypDB-30_LbraziliensisMHOMBR75M2903.gff -utr5 /path/to/work/UTRme_fiveutr.tsv -utr3 /path/to/work/UTRme_threeutr.tsv -dir_tool /path/to/program
-#bash pipe_ncrna.sh -dir_list /path/to/TriTry-ncRNA/pro -output /path/to/TriTry-ncRNA/pro_out -db -threads 20 -fasta /path/to/work/TriTrypDB-30_LbraziliensisMHOMBR75M2903_Genome.fasta -gff /path/to/work/TriTrypDB-30_LbraziliensisMHOMBR75M2903.gff  -utr5 /path/to/work/UTRme_fiveutr.tsv -utr3 /path/to/work/UTRme_threeutr.tsv -dir_tool /path/to/program
+#bash pipe_ncrna.sh -dir_list /path/to/TriTry-ncRNA/pro -output /path/to/TriTry-ncRNA/pro_out -db -threads 20 -reffasta /path/to/work/TriTrypDB-30_LbraziliensisMHOMBR75M2903_Genome.fasta -refgff /path/to/work/TriTrypDB-30_LbraziliensisMHOMBR75M2903.gff  -utr5 /path/to/work/UTRme_fiveutr.tsv -utr3 /path/to/work/UTRme_threeutr.tsv -dir_tool /path/to/program
+#bash pipe_ncrna.sh -dir_list /home/raquelh/noncodingRNA/Tryp-ncRNA/listdir.txt -output /home/raquelh/noncodingRNA/Tryp-ncRNA -db /home/raquelh/database -threads 20 -reffasta /home/raquelh/noncodingRNA/Tryp-ncRNA/LBRAZ_M2903.Dec2022.fasta -refgff /home/raquelh/noncodingRNA/Tryp-ncRNA/LBRAZ_M2903.Dec2022.gff  -utr5 /home/raquelh/noncodingRNA/Tryp-ncRNA/UTRme_fiveutr.tsv -utr3 /home/raquelh/noncodingRNA/Tryp-ncRNA/UTRme_threeutr.tsv -dir_tool /home/raquelh/programs
 
 # Parse command-line arguments
 while [[ $# -gt 0 ]]; do
@@ -55,22 +56,22 @@ echo "Tool Directory: $dir_tool"
 #verify the index files or run reference index 
 ref_name=$(basename "$fasta" .fasta)
 # Verificar si no existen archivos .bt2
-if ! ls "${output_base}/${ref_name}"*.bt2 1> /dev/null 2>&1; then
-    echo "Running bowtie-build"
-    bowtie2-build "${output_base}/${ref_name}.fasta" "$ref_name"
-    echo "Index created successfully"
-else
-    echo "BT2 files found, skipping bowtie-build"
-fi
+#if ! ls "${output_base}/${ref_name}"*.bt2 1> /dev/null 2>&1; then
+#    echo "Running bowtie-build"
+#    bowtie2-build "${output_base}/${ref_name}.fasta" "$ref_name"
+#    echo "Index created successfully"
+#else
+#    echo "BT2 files found, skipping bowtie-build"
+#fi
 
 # Verify the index file
-if ! ls "${output_base}/${ref_name}.fai" 1> /dev/null 2>&1; then
-    echo "Running bowtie-build"
-    samtools faidx "${output_base}/${ref_name}.fasta"
-    echo "Index created successfully"
-else
-    echo "FAI index found, skipping samtools"
-fi
+#if ! ls "${output_base}/${ref_name}.fai" 1> /dev/null 2>&1; then
+#    echo "Running bowtie-build"
+#    samtools faidx "${output_base}/${ref_name}.fasta"
+#    echo "Index created successfully"
+#else
+#    echo "FAI index found, skipping samtools"
+#fi
 
 echo "Verify the Pfam database"
 if [ ! -f "$database/pfam_database.dmnd" ]; then
@@ -106,9 +107,9 @@ while IFS= read -r subdir; do
     echo "${output_folder}"
     name_samples=()
     # Loop por todas as amostras
-    for fastq_file in "${subdir}"/*_1.fastq.gz; do
+    for fastq_file in "${subdir}"/*_L1.fastq.gz; do
         #Nome do arquivo .fastq (sem a extensão)
-        fastq_name=$(basename "$fastq_file" _1.fastq.gz)
+        fastq_name=$(basename "$fastq_file" _L1.fastq.gz)
         name_samples+=("$fastq_name")
     done
     echo "${name_samples}"
@@ -120,57 +121,57 @@ while IFS= read -r subdir; do
     echo "Running Bowtie2"
     # Loop through each sample
 
-    for sample in "${name_samples[@]}"; do
-        echo "Processing $sample..."
+    #for sample in "${name_samples[@]}"; do
+    #    echo "Processing $sample..."
 
         # Check if the sorted BAM and index files already exist
-        if [ -f "${output_folder}/mapped_${sample}_sorted.bam" ] && [ -f "${output_folder}/mapped_${sample}_sorted.bai" ]; then
-            echo "Files for $sample already exist. Skipping Bowtie2 for this sample."
-            continue
-        fi
+    #    if [ -f "${output_folder}/mapped_${sample}_sorted.bam" ] && [ -f "${output_folder}/mapped_${sample}_sorted.bai" ]; then
+    #        echo "Files for $sample already exist. Skipping Bowtie2 for this sample."
+    #        continue
+    #    fi
         # Run bowtie2
-        bowtie2 \
-        -N 1 \
-        -p "$threads" \
-        --local \
-        -x "$ref_name" \
-        -1 "${subdir}/${sample}_1.fastq.gz" \
-        -2 "${subdir}/${sample}_2.fastq.gz" \
-        -S "${output_folder}/mapped_${sample}.sam" 2> "${output_folder}/mapped_${sample}.log"
+    #    bowtie2 \
+    #    -N 1 \
+    #    -p "$threads" \
+    #    --local \
+    #    -x "$ref_name" \
+    #    -1 "${subdir}/${sample}_1.fastq.gz" \
+    #    -2 "${subdir}/${sample}_2.fastq.gz" \
+    #    -S "${output_folder}/mapped_${sample}.sam" 2> "${output_folder}/mapped_${sample}.log"
 
         # Convert SAM to BAM using samtools
-        samtools view -bS "${output_folder}/mapped_${sample}.sam" > "${output_folder}/mapped_${sample}.bam"
-        rm "${output_folder}/mapped_${sample}.sam"
-        samtools sort "${output_folder}/mapped_${sample}.bam" -o "${output_folder}/mapped_${sample}_sorted.bam"
-        rm "${output_folder}/mapped_${sample}.bam"
-        samtools index "${output_folder}/mapped_${sample}_sorted.bam" "${output_folder}/mapped_${sample}_sorted.bai"
-        echo "Mapping done successfully for ${sample}"
-    done
+    #    samtools view -bS "${output_folder}/mapped_${sample}.sam" > "${output_folder}/mapped_${sample}.bam"
+    #    rm "${output_folder}/mapped_${sample}.sam"
+    #    samtools sort "${output_folder}/mapped_${sample}.bam" -o "${output_folder}/mapped_${sample}_sorted.bam"
+    #    rm "${output_folder}/mapped_${sample}.bam"
+    #    samtools index "${output_folder}/mapped_${sample}_sorted.bam" "${output_folder}/mapped_${sample}_sorted.bai"
+    #    echo "Mapping done successfully for ${sample}"
+    #done
     echo "Processing complete."
 
     # String withs name sample separated by spaces and -I
-    inputs=""
-    for sample in "${name_samples[@]}"; do
-        inputs+=" I=${output_folder}/mapped_${sample}_sorted.bam"
-    done
+    #inputs=""
+    #for sample in "${name_samples[@]}"; do
+    #    inputs+=" I=${output_folder}/mapped_${sample}_sorted.bam"
+    #done
 
-    echo "Running Picard"
-    picard MergeSamFiles ${inputs} USE_THREADING=true O="${output_folder}/transcript_all.sorted.merged_files.bam"
-    picard BuildBamIndex I="${output_folder}/transcript_all.sorted.merged_files.bam"
+    #echo "Running Picard"
+    #picard MergeSamFiles ${inputs} USE_THREADING=true O="${output_folder}/transcript_all.sorted.merged_files.bam"
+    #picard BuildBamIndex I="${output_folder}/transcript_all.sorted.merged_files.bam"
     #echo "File picard successfully"
 
-    echo "Running igvtools"
-    igvtools count --strands second --windowSize 1 "${output_folder}/transcript_all.sorted.merged_files.bam" "${output_folder}/count_igv.wig,count_igv.tdf" "$fasta"
+    #echo "Running igvtools"
+    #igvtools count --strands second --windowSize 1 "${output_folder}/transcript_all.sorted.merged_files.bam" "${output_folder}/count_igv.wig,count_igv.tdf" "$fasta"
     echo "File igvtools successfully"
 
     echo "Running 2_identify_transcript.py"
     # Call 2_identify_transcript.py script
-    python3 2_identify_transcript.py "${output_folder}/count_igv.wig" "$output_folder" -threshold 100,50
+    #python3 2_identify_transcript.py "${output_folder}/count_igv.wig" "$output_folder" -threshold 100,50
     echo "Identify transcript done successfully"
 
     echo "Running 3_identify_possible_ncRNA_lncRNA.py"
     # Call 3_identify_possible_ncRNA_lncRNA.py script
-    python3 3_identify_possible_ncRNA_lncRNA.py "${output_folder}/transcript_100cov.txt" "${output_folder}/transcript_50cov.txt" "${output_folder}/possible_ncRNA.txt" "${output_folder}/possible_lncRNA.txt"
+    #python3 3_identify_possible_ncRNA_lncRNA.py "${output_folder}/transcript_100cov.txt" "${output_folder}/transcript_50cov.txt" "${output_folder}/possible_ncRNA.txt" "${output_folder}/possible_lncRNA.txt"
     echo "Identify ncRNA and lncRNA done successfully"
 
     echo "Running 4_annotation_ncRNA_lncRNA.py script"
@@ -186,12 +187,12 @@ while IFS= read -r subdir; do
 
     echo "Running 6_identify_ptu.py script"
     # Call 6_identify_ptu.py script
-    python3 6_identify_ptu.py "$gff" "${output_folder}/possible_ptu.txt"
+    python3 6_identify_ptu.py "$gff" "${output_folder}/possible_ptu.txt" "${output_folder}/possible_ssr.txt"
     echo "Identify PTU regions"
 
     echo "Running 7_parser_UTR_sense_antisense.py script"
     # Call 7_parser_UTR_sense_antisense.py script
-    python3 7_parser_UTR_sense_antisense.py "${output_folder}/annotation_ncRNA_final.txt" "${output_folder}/annotation_lncRNA.txt" "${output_folder}/possible_ptu.txt" "${output_folder}/ncRNAs_location_direction.bed" "$utr5" "$utr3"
+    python3 7_parser_UTR_sense_antisense.py "${output_folder}/annotation_ncRNA_final.txt" "${output_folder}/annotation_lncRNA.txt" "${output_folder}/possible_ptu.txt" "${output_folder}/possible_ssr.txt" "${output_folder}/ncRNAs_location_direction.bed" "$gff" "$utr5" "$utr3"
     echo "Annotation transcript at sense and location level"
 
     echo "Running bedtools getfasta"
@@ -224,11 +225,11 @@ for subdir in "$output_base"/*_out; do
     fi
 done
 echo "${allstages}" #Print the concatenated result
-
+echo "bedtools merge"
 cat ${allstages} > "${output_base}/final_all_ncrna.bed"
 sort -k1,1 -k2,2n "${output_base}/final_all_ncrna.bed" > "${output_base}/sorted_all_ncRNA.bed"
-bedtools merge -i "${output_base}/sorted_all_ncRNA.bed" -s -c 4,6,7,8,9,10 -o distinct,distinct,distinct,distinct,distinct,distinct > "${output_base}/unique_sort_allncrna.tab"
-
+bedtools merge -i "${output_base}/sorted_all_ncRNA.bed" -s -c 4,6,7,8,9 -o distinct,distinct,distinct,distinct,distinct > "${output_base}/unique_sort_allncrna.tab"
+echo "Create bed, tab and gff output files"
 python3 9_remake_output.py "${output_base}/unique_sort_allncrna.tab" "${output_base}/df_allncrna.tab" "${output_base}/df_allncrna.bed" "${output_base}/df_allncrna.gff"
 
 echo "Extract fasta non-coding RNA"

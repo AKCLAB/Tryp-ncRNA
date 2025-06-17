@@ -6,7 +6,7 @@ import numpy as np
 
 def process_file(sort_allncrna, allncrna_tab, allncrna_bed, allncrna_gff):
     #import all sort aunique ncRNAs
-    allncrna = pd.read_csv(sort_allncrna, sep='\t', names=["nc_chr","nc_coordi","nc_coordf","nc_id","nc_strand","nc_length","nc_location","nc_sentido","nc_position"])
+    allncrna = pd.read_csv(sort_allncrna, sep='\t', names=["nc_chr","nc_coordi","nc_coordf","nc_id","nc_strand","nc_length","nc_sentido","nc_position"])
     allncrna["nc_clength"] = (allncrna["nc_coordf"] - allncrna["nc_coordi"] + 1) #Calculate the position initial and final of ncRNAa
 
     ncrna = allncrna[(allncrna["nc_clength"]<=200) & (allncrna["nc_clength"]>=50)] #Select the small ncRNAs
