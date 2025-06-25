@@ -16,12 +16,15 @@
  -dir_tool Directory carrying the tools
   
  listdir.txt format 
- 
-  
+/Tryp-ncRNA/ama
+/Tryp-ncRNA/meta
+/Tryp-ncRNA/pro
+
  ## First steps of pipeline
   Confer or create index of reference file;
   Confer or create directory with input files from listdir.txt 
   Confer or download the Pfam database
+  Create the output directory "*_out"
   
  ## Loop by directory 
   Confere or create output directory "_out"
@@ -39,19 +42,19 @@
   python3 3_identify_possible_ncRNA_lncRNA.py "${output_folder}/transcript_100cov.txt" "${output_folder}/transcript_50cov.txt" "${output_folder}/possible_ncRNA.txt" "${output_folder}/possible_lncRNA.txt"
 
   Call 4_annotation_ncRNA_lncRNA.py script
-  To identify the location of non-coding RNA in coding or intergenic regions. 
+  To remove non-coding RNA overlapping CDSs. 
   python3 4_annotation_ncRNA_lncRNA.py "${output_folder}/possible_ncRNA.txt" "${output_folder}/possible_lncRNA.txt" "$gff" "${output_folder}/annotation_ncRNA.txt" "${output_folder}/annotation_lncRNA.txt"
 
   Call 5_identify_overlap_nc-lncRNA.py script
-  To identify the snc-RNA overlapping lnc-RNA.
+  To remove small ncRNA overlapping lncRNA.
   python3 5_identify_overlap_nc-lncRNA.py "${output_folder}/annotation_ncRNA.txt" "${output_folder}/annotation_lncRNA.txt" "${output_folder}/annotation_ncRNA_final.txt"
 
-  Call 6_identify_ptu.py script
-  To identify PTU regions 
+  Call 6_identify_ptu_ssr.py script
+  To identify PTU and SSR regions 
   python3 6_identify_ptu.py "$gff" possible_ptu.txt
 
-  Call 7_parser_UTR_sense_antisense.py script
-  To add information of sense of non-coding RNA in relation from PTUs, and overlapping of non-coding RNA in UTR regions.
+  Call 7_parser_UTR_PTU_SSR.py script script
+  To add information of sense of non-coding RNA in relation from PTUs, and overlapping of ncRNA in UTR and SSR regions.
   python3 7_parser_UTR_sense_antisense.py "${output_folder}/annotation_ncRNA_final.txt" "${output_folder}/annotation_lncRNA.txt" possible_ptu.txt "${output_folder}/ncRNAs_location_direction.bed" "$utr5" "$utr3"
 
   To extract fasta sequences of all non-coding RNA
@@ -71,8 +74,8 @@
   9_remake_output.py: Create gff and bed format output files.
   python3 9_remake_output.py "${output_base}/unique_sort_allncrna.tab" "${output_base}/df_allncrna.tab" "${output_base}/df_allncrna.bed df_allncrna.gff"
 
-  Run processing PORTRAIT & ptRNApred1 & tRNAscan & snoscan
+  Run processing PORTRAIT & ptRNApred1 & tRNAscan & snoscan & RNAcon
   10_postprocessing_ncrna.py:complement with characterization of non-coding RNA.
-  python3 "${path_script}/10_postprocessing_ncrna.py" "${output_base}/df_allncrna.tab" "${output_base}/fasta_ncrna.fasta_results_all.scores" "${output_base}/output_ptrnapred1.txt" "${output_base}/tRNAscan-output.tab" "${output_base}/output_snoscan.txt"
+  python3 "${path_script}/10_postprocessing_ncrna.py" "${output_base}/df_allncrna.tab" "${output_base}/fasta_ncrna.fasta_results_all.scores" "${output_base}/output_ptrnapred1.txt" "${output_base}/tRNAscan-output.tab" "${output_base}/output_snoscan.txt" "${output_base}/output_rnacon.txt" "${output_base}/df_allncrna_final.tab"
 
 
