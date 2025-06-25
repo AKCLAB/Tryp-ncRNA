@@ -38,7 +38,7 @@ if [ -z "$dir_list" ] || [ -z "$output_base" ] || [ -z "$database" ] || [ -z "$t
     usage
 fi
 
-#Save variable of Scripts or work path
+# Save variable of scripts or work path
 path_script="$(dirname "$(realpath "$0")")"
 
 # Now use these variables in your script
@@ -52,9 +52,9 @@ echo "optional UTR5 File: $utr5"
 echo "optional UTR3 File: $utr3"
 echo "Tool Directory: $dir_tool"
 
-#verify the index files or run reference index 
+# Verify the index files or run reference index 
 ref_name=$(basename "$fasta" .fasta)
-# Verificar si no existen archivos .bt2
+# Verify if is there the .bt2 file
 if ! ls "${output_base}/${ref_name}"*.bt2 1> /dev/null 2>&1; then
     echo "Running bowtie-build"
     bowtie2-build "${output_base}/${ref_name}.fasta" "$ref_name"
@@ -86,7 +86,6 @@ echo "Pfam database created successfully"
 while IFS= read -r subdir; do
     # Skip empty lines
     [[ -z "$subdir" ]] && continue
-
     # Check if the input directory exists
     if [ ! -d "$subdir" ]; then
         echo "Warning: Directory '$subdir' not found. Skipping."
@@ -99,16 +98,15 @@ while IFS= read -r subdir; do
     # Construct the output directory name
     output_folder="${output_base}/${dir_name}_out"
     # Ensure the output directory exists
-    #mkdir -p "$output_folder"
     if [ ! -d "$output_folder" ]; then
         mkdir "$output_folder"
     fi
     echo "${output_folder}"
     name_samples=()
-    # Loop por todas as amostras
-    for fastq_file in "${subdir}"/*_L1.fastq.gz; do
+    # Loop for all samples
+    for fastq_file in "${subdir}"/*1.fastq.gz; do
         #Nome do arquivo .fastq (sem a extensão)
-        fastq_name=$(basename "$fastq_file" _L1.fastq.gz)
+        fastq_name=$(basename "$fastq_file" 1.fastq.gz)
         name_samples+=("$fastq_name")
     done
     echo "${name_samples}"
@@ -149,14 +147,26 @@ while IFS= read -r subdir; do
     echo "Processing complete."
 
     # String withs name sample separated by spaces and -I
-    inputs=""
-    for sample in "${name_samples[@]}"; do
-        inputs+=" I=${output_folder}/mapped_${sample}_sorted.bam"
-    done
 
-    echo "Running Picard"
-    picard MergeSamFiles ${inputs} USE_THREADING=true O="${output_folder}/transcript_all.sorted.merged_files.bam"
-    picard BuildBamIndex I="${output_folder}/transcript_all.sorted.merged_files.bam"
+    if [ ${#name_samples[@]} -eq 1 ]; then
+        echo "Only one BAM file. Skipping merge."
+
+        # Renomeia o arquivo para o nome esperado na saída
+        cp ${output_folder}/mapped_${name_samples[0]}*_sorted.bam ${output_folder}/transcript_all.sorted.merged_files.bam
+
+        # Cria o índice
+        picard BuildBamIndex I="${output_folder}/transcript_all.sorted.merged_files.bam"
+
+    else
+        inputs=""
+        for sample in "${name_samples[@]}"; do
+            inputs+=" I=${output_folder}/mapped_${sample}_sorted.bam"
+        done
+
+        echo "Running Picard MergeSamFiles"
+        picard MergeSamFiles ${inputs} USE_THREADING=true O="${output_folder}/transcript_all.sorted.merged_files.bam"
+        picard BuildBamIndex I="${output_folder}/transcript_all.sorted.merged_files.bam"
+    fi
     echo "File picard successfully"
 
     echo "Running igvtools"
@@ -164,45 +174,37 @@ while IFS= read -r subdir; do
     echo "File igvtools successfully"
 
     echo "Running 2_identify_transcript.py"
-    # Call 2_identify_transcript.py script
     python3 2_identify_transcript.py "${output_folder}/count_igv.wig" "$output_folder" -threshold 100,50
     echo "Identify transcript done successfully"
 
     echo "Running 3_identify_possible_ncRNA_lncRNA.py"
-    # Call 3_identify_possible_ncRNA_lncRNA.py script
     python3 3_identify_possible_ncRNA_lncRNA.py "${output_folder}/transcript_100cov.txt" "${output_folder}/transcript_50cov.txt" "${output_folder}/possible_ncRNA.txt" "${output_folder}/possible_lncRNA.txt"
     echo "Identify ncRNA and lncRNA done successfully"
 
     echo "Running 4_annotation_ncRNA_lncRNA.py script"
-    # Call 4_annotation_ncRNA_lncRNA.py script
     python3 4_annotation_ncRNA_lncRNA.py "${output_folder}/possible_ncRNA.txt" "${output_folder}/possible_lncRNA.txt" "$gff" "${output_folder}/annotation_ncRNA.txt" "${output_folder}/annotation_lncRNA.txt"
     echo "Position annnotation of ncRNA and lncRNA"
 
     echo "Running 5_identify_overlap_nc-lncRNA.py script"
-    # Call 5_identify_overlap_nc-lncRNA.py script
     python3 5_identify_overlap_nc-lncRNA.py "${output_folder}/annotation_ncRNA.txt" "${output_folder}/annotation_lncRNA.txt" "${output_folder}/annotation_ncRNA_final.txt"
     echo "Identify ncRNA and lncRNA do not overlapping"
 
-    echo "Running 6_identify_ptu.py script"
-    # Call 6_identify_ptu.py script
-    python3 6_identify_ptu.py "$gff" "${output_folder}/possible_ptu.txt" "${output_folder}/possible_ssr.txt"
+    echo "Running 6_identify_ptu_ssr.py script"
+    python3 6_identify_ptu_ssr.py "$gff" "${output_folder}/possible_ptu.txt" "${output_folder}/possible_ssr.txt"
     echo "Identify PTU regions"
 
-    echo "Running 7_parser_UTR_sense_antisense.py script"
-    # Call 7_parser_UTR_sense_antisense.py script
-    python3 7_parser_UTR_sense_antisense.py "${output_folder}/annotation_ncRNA_final.txt" "${output_folder}/annotation_lncRNA.txt" "${output_folder}/possible_ptu.txt" "${output_folder}/possible_ssr.txt" "${output_folder}/ncRNAs_location_direction.bed" "$gff" "$utr5" "$utr3"
-    echo "Annotation transcript at sense and location level"
+    echo "Running 7_parser_UTR_PTU_SSR.py script"
+    python3 7_parser_UTR_PTU_SSR.py "${output_folder}/annotation_ncRNA_final.txt" "${output_folder}/annotation_lncRNA.txt" "${output_folder}/possible_ptu.txt" "${output_folder}/possible_ssr.txt" "${output_folder}/ncRNAs_location_direction.bed" "$gff" "$utr5" "$utr3"
+    echo "Annotation transcript at sense and location"
 
-    echo "Running bedtools getfasta"
-    #Extract fasta sequences 
+    echo "Running bedtools getfasta to extract fasta sequences"
     bedtools getfasta -fi "$fasta" -bed "${output_folder}/ncRNAs_location_direction.bed" -fo "${output_folder}/all_ncrna.fasta" -name+
     echo "Extracted fasta sequences"
 
-    #Running filter blastx
-    echo "Running diamond"
+    echo "Running diamond blastx"
     diamond blastx --query "${output_folder}/all_ncrna.fasta" --db "${database}/pfam_database.dmnd" --out "${output_folder}/ncrna_pfam-cov80-max1.tab" --outfmt 6 qseqid sseqid pident qcovhsp length qlen slen qstart qend sstart send evalue bitscore stitle --id 90 --query-cover 80 --evalue 1e-5 --threads "$threads" --max-target-seqs 1
     echo "diamond blastx done successefully"
-    
+
     echo "Final selection of ncRNA"
     python3 8_select_ncrna.py "${output_folder}/ncRNAs_location_direction.bed" "${output_folder}/ncrna_pfam-cov80-max1.tab" "${output_folder}/final_ncRNAs_location_direction.bed"
 
@@ -212,9 +214,7 @@ echo "cat all bed outputs, sort and merge all unique anotates ncRNA"
 allstages=""
 #Loop through directories ending with "_out"
 for subdir in "$output_base"/*_out; do
-    # Ensure it's a directory
     if [ -d "$subdir" ]; then
-        # Check if the expected file exists
         if [ -f "$subdir/final_ncRNAs_location_direction.bed" ]; then
             allstages+="$subdir/final_ncRNAs_location_direction.bed "
         else
@@ -222,37 +222,47 @@ for subdir in "$output_base"/*_out; do
         fi
     fi
 done
-echo "${allstages}" #Print the concatenated result
+
+#echo "${allstages}" 
 echo "bedtools merge"
 cat ${allstages} > "${output_base}/final_all_ncrna.bed"
 sort -k1,1 -k2,2n "${output_base}/final_all_ncrna.bed" > "${output_base}/sorted_all_ncRNA.bed"
 bedtools merge -i "${output_base}/sorted_all_ncRNA.bed" -s -c 4,6,7,8,9 -o distinct,distinct,distinct,distinct,distinct > "${output_base}/unique_sort_allncrna.tab"
+
 echo "Create bed, tab and gff output files"
 python3 9_remake_output.py "${output_base}/unique_sort_allncrna.tab" "${output_base}/df_allncrna.tab" "${output_base}/df_allncrna.bed" "${output_base}/df_allncrna.gff"
 
-echo "Extract fasta non-coding RNA"
+echo "Extract ncRNA sequences"
 bedtools getfasta -fi "$fasta" -bed "${output_base}/df_allncrna.bed" -fo "${output_base}/fasta_ncrna.fasta" -name+
 echo "Extracted fasta sequences"
 
-# Check if all variables are set
+# Check if there is the dir_tool diretory
 if [ -z "$dir_tool" ] ; then
     usage
 fi
-#run in sudo
+
 echo "Run PORTRAIT"
-cd "${dir_tool}/portrait-1.1" && perl portrait-1.1.pl -i "${output_base}/fasta_ncrna.fasta"
+cd "${dir_tool}/portrait-1.1" && perl portrait-1.1.pl -i "${output_base}/fasta_ncrna.fasta" -s "${dir_tool}/libsvm-2.84" -c "${dir_tool}/cast-linux" -a "${dir_tool}/angle"
+echo "successfully PORTRAIT run"
 
 echo "Run ptRNApred1"
 cd "${dir_tool}/ptRNApred1.0" && perl perl-start.pl -i "${output_base}/fasta_ncrna.fasta" -n "$threads" > "${output_base}/output_ptrnapred1.txt"
+echo "successfully ptRNApred1 run"
 
 echo "Run tRNAscan"
 tRNAscan-SE -G -o "${output_base}/tRNAscan-output.tab" -f "${output_base}/tRNAscan_structure" -q "${output_base}/fasta_ncrna.fasta"
+echo "successfully tRNAscan run"
 
 echo "Run snoscan"
-cd "${dir_tool}/snoscan/snoscan-0.9.1" && ./snoscan "${dir_tool}/snoscan/snoscan-0.9.1/Lb-rRNA.fa" "${output_base}/fasta_ncrna.fasta" > "${output_base}/output_snoscan.txt"
+#complete ribossomal sequences in all species 
+# Use with manual installation # cd "${dir_tool}/snoscan/snoscan-0.9.1" && ./snoscan "${dir_tool}/snoscan/snoscan-0.9.1/Lb-rRNA.fa" "${output_base}/fasta_ncrna.fasta" > "${output_base}/output_snoscan.txt"
+snoscan "${output_base}/Lb-rRNA.fa" "${output_base}/fasta_ncrna.fasta" > "${output_base}/output_snoscan.txt"
+echo "successfully snoscan run"
 
 echo "Run rnacon"
 cd "${dir_tool}/RNAcon_standalone" && perl RNAcon.pl  -i "${output_base}/fasta_ncrna.fasta" -t "$threads"  -o "${output_base}/output_rnacon.txt"
+echo "successfully RNAcon run"
 
-echo "Run processing PORTRAIT & ptRNApred1 & tRNAscan & snoscan"
+echo "Run processing PORTRAIT & ptRNApred1 & tRNAscan & snoscan & RNAcon"
 python3 "${path_script}/10_postprocessing_ncrna.py" "${output_base}/df_allncrna.tab" "${output_base}/fasta_ncrna.fasta_results_all.scores" "${output_base}/output_ptrnapred1.txt" "${output_base}/tRNAscan-output.tab" "${output_base}/output_snoscan.txt" "${output_base}/output_rnacon.txt" "${output_base}/df_allncrna_final.tab"
+echo "Congratulations, we have successfully succeeded in your non-coding RNA!"

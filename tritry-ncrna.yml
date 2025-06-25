@@ -89,6 +89,7 @@ dependencies:
   - perl-inc-latest=0.500=pl5321ha770c72_0
   - perl-module-build=0.4234=pl5321ha770c72_1
   - picard=3.3.0=hdfd78af_0
+  - igvtools=2.3.93
   - pip=25.0.1=pyh8b19718_0
   - pixman=0.44.2=h29eaf8c_0
   - pthread-stubs=0.4=hb9d3cd8_1002
