@@ -1,28 +1,28 @@
 # Tryp-ncRNA
 
-TriTry-ncRNA is a pipeline in order to identify putative non-coding RNAs in Trypanosomatids organisms by analyzing transcripts derived from RNA-seq data. This tool initiates its process by detecting the set of transcripts mapped from sequencing the total RNA of the three life stages of Leishmania braziliensis: procyclic promastigote (PRO), metacyclic promastigote (META), and amastigote (AMA).
+Tryp-ncRNA is a pipeline in order to identify putative non-coding RNAs in Trypanosomatids organisms by analyzing transcripts derived from RNA-seq data. This tool initiates its process by detecting the set of transcripts mapped from sequencing the total RNA of the three life stages of Leishmania braziliensis: procyclic promastigote (PRO), metacyclic promastigote (META), and amastigote (AMA).
 
 ![non-coding RNA analysis workflow](Workflow-Tryp-ncRNA.png)
 
- Workflow-TriTryp-ncRNA.png
+ Workflow-Tryp-ncRNA.png
 
 ## Introduction
 * 2_identify_transcript.py: Identify in all chromossomal positions the coverage >= 50x or 100x reads for strand + & - strand.
 * 3_identify_possible_ncRNA_lncRNA.py: Identify lnc-RNA (>200pb) with >= 50x cov and snc-RNA (<200 pb) with >= 100x cov.
 * 4_annotation_ncRNA_lncRNA.py: Identify the location of non-coding RNA in coding or intergenic regions. 
 * 5_identify_overlap_nc-lncRNA.py: Identify the snc-RNA overlapping lnc-RNA.
-* 6_identify_ptu.py: To identify: PTU regions.
-* 7_parser_UTR_sense_antisense.py: Add information of sense of non-coding RNA in relation from PTUs and UTR regions.
+* 6_identify_ptu_ssr.py: To identify: PTU and SSR regions.
+* 7_parser_UTR_PTU_SSR.py: Add information of sense of non-coding RNA in relation from PTUs and overlapping of ncRNA in UTR and SSR regions.
 * 8_select_ncrna.py: Final selection by directory.
 * 9_remake_output.py: Create gff, tab and bed format output files.
 * 10_postprocessing_ncrna.py: complement with characterization of non-coding RNA
 
 
-The pipeline process all the python code by directory, each directory can represent a life cycle, that contain the biological repetions in fastq format (*_1/2.fastq.gz) and a size of aproximately 72 Mpb (~5 Gb) dependent on therholds 50x and 100x.
- Posteriolly this are merge for all total non-coding RNAs.
+The pipeline process all the python code by directory, each directory can represent a life cycle, that contain the biological repetions in fastq format (*1/2.fastq.gz) and a size of aproximately 72 Mpb (~5 Gb) dependent on therholds 50x and 100x.
+ Posteriolly this are merge for a prediction total of ncRNAs.
 
 ## Input files
-TriTry-ncRNA users should have the following minimal input files:
+Tryp-ncRNA users should have the following minimal input files:
 - lisdir.txt (-dir_list) : File contain a list of
  directories path that contain all fastq files.
 - genome.fasta (-fasta): Reference genome FASTA file.
@@ -46,17 +46,20 @@ The following software and libraries must be installed on your machine:
 * ptRNApred1.0 (optional)
 * tRNAscan-SE (optional)
 * snoscan (optional)
+* RNAcon (optional)
+* R
+* Java 11+
 * Dependences (regex xlsxwriter matplotlib seaborn scipy pysam fuzzywuzzy biopython cutadapt)
 
-## How to install TriTry-ncRNA?
+## How to install Tryp-ncRNA?
 
 ### You can use the git command:
 ```
 sudo apt-get install git
 ````
 ```
-git clone https://github.com/AKCLAB/TriTry-ncRNA.git
-cd TriTry-ncRNA
+git clone https://github.com/AKCLAB/Tryp-ncRNA.git
+cd Tryp-ncRNA
 ```
 
 ### Then, if you do not have conda/miniconda installed, you must first install it. 
