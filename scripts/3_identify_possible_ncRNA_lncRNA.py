@@ -1,7 +1,6 @@
 import sys
 import re
 #command: python 3_identify_possible_ncRNA_lncRNA.py transcript_100cov.txt transcript_50cov.txt possible_ncRNA.txt possible_lncRNA.txt
-# Inicializar as variáveis globais
 i = 1  # numeral do ncRNA
 #out_file = "possible_ncRNA.txt" # output file for small ncRNA
 #out_file2 = "possible_lncRNA.txt"  # output file for large ncRNA
@@ -15,7 +14,7 @@ def process_file(transcript_100, transcript_50, out_file, out_file2):
         transcript_lines_50 = fh50.readlines()  # Read transcript_50
     
         with open(out_file, 'w') as fh_ncRNA, open(out_file2, 'w') as fh_lncRNA:
-        # Process the transcripts of transcript_50 (lncRNA)
+            # Process the transcripts of transcript_50 (lncRNA)
             for ltra_row in transcript_lines_50:
                 ltra_row = ltra_row.strip()  # Remove spaces
                 ltra_fields = ltra_row.split("\t")  # Split columns
@@ -25,7 +24,7 @@ def process_file(transcript_100, transcript_50, out_file, out_file2):
                 if ltra_length > 200:
                     fh_lncRNA.write(f"{ltra_chr}\t{ltra_coordi}\t{ltra_coordf}\t{ltra_chr}_l{ltra_i}\t.\t{ltra_strand}\t{ltra_length}\n")
 
-                        # Process the transcripts of transcript_100 (ncRNA)
+            # Process the transcripts of transcript_100 (ncRNA)
             for tra_row in transcript_lines_100:
                 tra_row = tra_row.strip()  # Remove espace
                 tra_fields = tra_row.split("\t")  # split columns
