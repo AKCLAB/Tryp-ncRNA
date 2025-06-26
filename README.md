@@ -67,10 +67,10 @@ cd Tryp-ncRNA
 wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda3-latest-Linux-x86_64.sh
 ```
-Once conda/miniconda is installed, you must create an enviroment and install TriTry-ncRNA.  The file tritry-ncrna.yml is inside the TriTry-ncRNA folder.
+Once conda/miniconda is installed, you must create an enviroment and install Tryp-ncRNA. The file tryp-ncrna.yml is inside the Tryp-ncRNA folder.
 ```
-conda env create -f tritry-ncrna.yml
-source activate tritry-ncrna
+conda env create -f tryp-ncrna.yml
+source activate tryp-ncrna
 ```
 ### Installation of optional tools
 
@@ -80,7 +80,7 @@ git clone https://github.com/UCSC-LoweLab/tRNAscan-SE.git
 cd tRNAscan-SE
 ./configure
 make install
-apt install infernal
+apt install -y infernal
 sudo ln -s /usr/bin/cmsearch /usr/local/bin/cmsearch
 sudo ln -s /usr/bin/cmscan /usr/local/bin/cmscan
 ```
@@ -95,16 +95,14 @@ wget https://www.bioinformatics.org/portrait/download/cast-linux.tar.gz
 tar -zxvf cast-linux.tar.gz
 chmod +x cast-linux
 wget https://www.bioinformatics.org/portrait/download/libsvm-2.84.tar.gz
-tar -zxvf libsvm-2.84.tar.gz
-cd libsvm-2.84
-make
-sudo chmod +x /path/to/cast-linux/cast-linux
-sudo chmod +x /path/to/programs/angle/angle
-sudo chmod +x /path/to/programs/libsvm-2.84/svm-predict
-sudo chmod +x /path/to/programs/libsvm-2.84/svm-train
-export PATH=$PATH:/path/to/programs/cast-linux
-export PATH=$PATH:/path/to/programs/angle
-export PATH=$PATH:/path/to/programs/libsvm-2.84
+dpkg --add-architecture i386 && \
+apt update && \
+apt install -y libc6:i386 libstdc++6:i386 && \
+apt install -y libstdc++5 && \
+tar -zxvf libsvm-2.84.tar.gz  && \
+rm *.gz && \
+cd libsvm-2.84  && \
+make 
 ```
 
 ptRNApred
@@ -116,6 +114,30 @@ tar -zxvf ViennaRNA-2.7.0.tar.gz
 cd ViennaRNA-2.4.17 
 ./configure --without-perl --without-python --without-python2 --without-forester --without-rnalocmin \
 make && make install
+```
+
+RNAcon
+```
+wget http://webs.iiitd.edu.in/raghava/rnacon/RNAcon_v1.0.tar.gz
+tar -zxvf RNAcon_v1.0.tar.gz
+wget https://osmot.cs.cornell.edu/svm_light/current/svm_light_linux64.tar.gz
+tar -zxvf svm_light_linux64.tar.gz\
+mv svm_classify RNAcon_standalone/progs
+wget https://prdownloads.sourceforge.net/weka/weka-3-8-6-azul-zulu-linux.zip
+unzip weka-3-8-6-azul-zulu-linux.zip
+chmod +x weka-3-8-6/weka.jar
+mv weka-3-8-6/weka.jar RNAcon_standalone/progs
+wget https://github.com/satoken/ipknot/releases/download/v1.1.0/ipknot-1.1.0-x86_64-linux.zip
+unzip ipknot-1.1.0-x86_64-linux.zip
+mv ipknot-1.1.0-x86_64-linux/ipknot RNAcon_standalone/progs
+wget https://varna.lisn.upsaclay.fr/bin/VARNAv3-8-src.jar
+chmod +x VARNAv3-8-src.jar
+mv VARNAv3-8-src.jar RNAcon_standalone/progs
+
+Rscript -e "install.packages('igraph', repos='https://cloud.r-project.org')"
+Rscript -e "install.packages('cpp11', repos='https://cloud.r-project.org')"
+Rscript -e "if (!requireNamespace('BiocManager', quietly=TRUE)) install.packages('BiocManager', repos='https://cloud.r-project.org')"
+Rscript -e "BiocManager::install('Biostrings')"
 ```
 
 UTRme
