@@ -169,7 +169,7 @@ bash pipe_ncrna.sh -dir_list /path/to/TriTry-ncRNA/test/listdir.txt -output /pat
 |---------------|-------------|
 | **.gff**  | Annotation GFF Format file containing annotations, identified ncRNA regions. |
 | **.bed**  | Browser Extensible Data file used for genomic intervals and features of ncRNA regions. |
-| **.tab**  | Tab-delimited file containing the prediction of ncRNA regions in each life stages by exression level, in addition contain the final characterization. |
+| **.tab**  | Tab-delimited file containing the prediction of ncRNA regions in each life stages by expression level, in addition contain the final characterization. |
 | **.fasta** | FASTA format file containing nucleotide sequences of identified ncRNAs. |
 
 ## Command line options
