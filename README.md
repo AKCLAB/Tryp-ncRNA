@@ -150,7 +150,7 @@ python3 utrme.py Example_configuration_file.txt
 ```
 
 
-## Invoking TriTry-ncRNA
+## Invoking Tryp-ncRNA
 ```
  bash pipe_ncrna.sh -dir_list <file> -output <path> -db <path> -threads <number> -reffasta <file> -refgff <file> -utr5 <file> -utr3 <file> -dir_tool <path>
 ```
@@ -159,7 +159,7 @@ python3 utrme.py Example_configuration_file.txt
 ```
 cd scripts/
 
-bash pipe_ncrna.sh -dir_list /path/to/TriTry-ncRNA/test/listdir.txt -output /path/to/TriTry-ncRNA -db /path/to/TriTry-ncRNA/database -threads 2 -reffasta /path/to/TriTry-ncRNA/test/TriTrypDB-30_LbraziliensisMHOMBR75M2903_Genome.fasta -refgff /path/to/TriTry-ncRNA/test/TriTrypDB-30_LbraziliensisMHOMBR75M2903.gff -utr5 /path/to/TriTry-ncRNA/test/UTRme_fiveutr.tsv -utr3 /path/to/TriTry-ncRNA/TriTry-ncRNA/test/UTRme_threeutr.tsv -dir_tool /path/to/program
+bash pipe_ncrna.sh -dir_list /path/to/tryp-ncRNA/test/listdir.txt -output /path/to/tryp-ncRNA -db /path/to/tryp-ncRNA/database -threads 2 -reffasta /path/to/tryp-ncRNA/test/TriTrypDB-30_LbraziliensisMHOMBR75M2903_Genome.fasta -refgff /path/to/tryp-ncRNA/test/TriTrypDB-30_LbraziliensisMHOMBR75M2903.gff -utr5 /path/to/tryp-ncRNA/test/UTRme_fiveutr.tsv -utr3 /path/to/tryp-ncRNA/Tryp-ncRNA/test/UTRme_threeutr.tsv -dir_tool /path/to/program
 
 ```
 
