@@ -72,6 +72,21 @@ Once conda/miniconda is installed, you must create an enviroment and install Try
 conda env create -f tryp-ncrna.yml
 source activate tryp-ncrna
 ```
+
+### Docker use 
+```
+docker build -t tryp /path/to/Dockerfile
+cd Tryp-ncRNA
+#docker run -it 81d7a530b8a8
+docker run -v `pwd`:/Tryp-ncRNA -it 81d7a530b8a8
+conda activate tryp-ncrna
+```
+
+### Docker example test
+```
+bash pipe_ncrna.sh -dir_list /Tryp-ncRNA/test/listdir.txt -output /Tryp-ncRNA -db /Tryp-ncRNA/database -threads 20 -reffasta /Tryp-ncRNA/test/LBRAZ_M2903.Dec2022.fasta -refgff /Tryp-ncRNA/test/LBRAZ_M2903.Dec2022.gff -utr5 /Tryp-ncRNA/test/UTRme_fiveutr.tsv -utr3 /Tryp-ncRNA/test/UTRme_threeutr.tsv -dir_tool /programs
+```
+
 ### Installation of optional tools
 
 tRNAscan-SE
