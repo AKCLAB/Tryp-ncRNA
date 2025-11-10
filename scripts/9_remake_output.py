@@ -6,9 +6,9 @@ import numpy as np
 
 def process_file(sort_allncrna, allncrna_tab, allncrna_bed, allncrna_gff):
     #import all sort aunique ncRNAs
-    allncrna = pd.read_csv(sort_allncrna, sep='\t', names=["nc_chr","nc_coordi","nc_coordf","nc_id","nc_strand","nc_length","nc_sentido","nc_position"])
+    allncrna = pd.read_csv(sort_allncrna, sep='\t', names=["nc_chr","nc_coordi","nc_coordf","nc_id","nc_strand","nc_length","nc_sentido","nc_position"],index_col=False)
     allncrna["nc_clength"] = (allncrna["nc_coordf"] - allncrna["nc_coordi"] + 1) #Calculate the position initial and final of ncRNAa
-
+    print(allncrna)
     ncrna = allncrna[(allncrna["nc_clength"]<=200) & (allncrna["nc_clength"]>=50)] #Select the small ncRNAs
     lncrna = allncrna[allncrna["nc_clength"]>200] #Select the lncRNAs
 
@@ -39,6 +39,7 @@ def process_file(sort_allncrna, allncrna_tab, allncrna_bed, allncrna_gff):
 
     #Save format bed of all ncRNAa
     ncrna_bed = allncrna_v2[['nc_chr', 'nc_coordi', 'nc_coordf', 'ncrna_name', 'nc_strand']]
+    ncrna_bed['nc_coordi'] = ncrna_bed['nc_coordi'] - 1
     ncrna_bed.insert(loc=4, column="", value=".")
     ncrna_bed.to_csv(allncrna_bed, sep='\t', index=False, header=False)
 

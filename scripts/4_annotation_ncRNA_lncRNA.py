@@ -19,7 +19,7 @@ def process_file(transcript_ncrna, transcript_lncrna, gff, out_file, out_file2):
 
     with open(transcript_ncrna, 'r') as fh_ncRNA:
         transcript_ncrna = fh_ncRNA.readlines()  # Read transcript_100cov
-    
+
     with open(transcript_lncrna, 'r') as fh_lncRNA:
         transcript_lncrna = fh_lncRNA.readlines()  # Read transcript_50cov
 
@@ -32,8 +32,8 @@ def process_file(transcript_ncrna, transcript_lncrna, gff, out_file, out_file2):
                 ltra_row = ltra_row.strip()  # Remove spaces
                 ltra_fields = ltra_row.split("\t")  # Split columns
                 ltra_chr, ltra_coordi, ltra_coordf, ltra_i, ltra_strand, ltra_length = ltra_fields[0],  int(ltra_fields[1]), int(ltra_fields[2]), ltra_fields[3], ltra_fields[5], int(ltra_fields[6])
-                matched = False  # Control variable to verify match
-
+                overlap_same_strand = False
+                overlap_diff_strand = False
                 # Verify lncRNA overlapping on CDSs
                 for cds_row in fh_cds:
                     if cds_row.startswith("#"):
@@ -49,22 +49,17 @@ def process_file(transcript_ncrna, transcript_lncrna, gff, out_file, out_file2):
                             ((ltra_coordi >= cds_coordi and ltra_coordi <= cds_coordf) or (ltra_coordf >= cds_coordi and ltra_coordf <= cds_coordf) or
                             (cds_coordi >= ltra_coordi and cds_coordi <= ltra_coordf) or
                             (cds_coordf >= ltra_coordi and cds_coordf <= ltra_coordf))):
-
+                            # Mark if it's the same or different strand
                             if ltra_strand != cds_strand:
-                                #print(ltra_chr, ltra_coordi, ltra_coordf, ltra_strand, ltra_length, cds_id)
-                                #fh_lncRNA.write(f"{ltra_chr}\t{ltra_coordi}\t{ltra_coordf}\t{ltra_chr}_lncRNA{i}\t{ltra_length}\t{ltra_strand}\t{cds_id}\n")
-                                fh_lncRNA.write(f"{ltra_chr}\t{ltra_coordi}\t{ltra_coordf}\t{ltra_i}\t.\t{ltra_strand}\t{ltra_length}\n")
-                                i += 1
-                                matched = True
-                                break  # Match found for each loop
-                            else:  # Mesmo strand, não é intergênico
-                                matched = True
-                                break
-                # If there is no match with any CDS, it is intergenic
-                if not matched:
-                    #print(ltra_chr, ltra_coordi, ltra_coordf, ltra_strand, ltra_length, "intergenic")
+                                overlap_diff_strand = True
+                            else:
+                                overlap_same_strand = True
+                # Keep it (only if all overlays are with different strands)
+                if overlap_diff_strand and not overlap_same_strand:
                     fh_lncRNA.write(f"{ltra_chr}\t{ltra_coordi}\t{ltra_coordf}\t{ltra_i}\t.\t{ltra_strand}\t{ltra_length}\n")
-                    i += 1
+                elif not overlap_diff_strand and not overlap_same_strand:
+                # It does not overlap with any CDS → it is an intergenic lncRNA.
+                    fh_lncRNA.write(f"{ltra_chr}\t{ltra_coordi}\t{ltra_coordf}\t{ltra_i}\t.\t{ltra_strand}\t{ltra_length}\n")
 
             # Process the transcripts of transcript_100 (ncRNA)
             for tra_row in transcript_ncrna:
@@ -73,7 +68,8 @@ def process_file(transcript_ncrna, transcript_lncrna, gff, out_file, out_file2):
                 tra_fields = tra_row.split("\t")  # split columns
                 tra_chr, tra_coordi, tra_coordf, tra_i, tra_strand, tra_length = tra_fields[0], int(tra_fields[1]), int(tra_fields[2]), tra_fields[3], tra_fields[5], int(tra_fields[6])
                 matched = False  # Control variable to verify match
-
+                overlap_same_strand = False
+                overlap_diff_strand = False
                 # Verify lncRNA overlapping on CDsA
                 for cds_row in fh_cds:
                     if cds_row.startswith("#"):
@@ -82,30 +78,24 @@ def process_file(transcript_ncrna, transcript_lncrna, gff, out_file, out_file2):
                     cds_fields = cds_row.strip().split("\t")
                     # Check if the line is a CDS entry
                     if cds_fields[2] in ["CDS", "exon"]:
-                    #f cds_fields[2] == "CDS":
-                        # Extract the ID from the 9th column (index 8)
-                        cds_id = extract_info(cds_fields[8])
                         cds_chr, cds_coordi, cds_coordf, cds_strand = cds_fields[0],  int(cds_fields[3]), int(cds_fields[4]), cds_fields[6]
                         # Verify transcript in CDs & not be in the same strand & size
                         if tra_chr == cds_chr and (((tra_coordi >= cds_coordi and tra_coordi <= cds_coordf) or
                             (tra_coordf >= cds_coordi and tra_coordf <= cds_coordf) or
                             (cds_coordi >= tra_coordi and cds_coordi <= tra_coordf) or
                             (cds_coordf >= tra_coordi and cds_coordf <= tra_coordf))):
-                                
+                            # Mark if it's the same or different strand
                             if tra_strand != cds_strand:
-                                #prin\t(tra_chr, tra_coordi, tra_coordf, tra_strand, tra_length, cds_id)
-                                fh_ncRNA.write(f"{tra_chr}\t{tra_coordi}\t{tra_coordf}\t{tra_i}\t.\t{tra_strand}\t{tra_length}\n")
-                                i += 1
-                                matched = True
-                                break  # Match found for each loop
-                            else:  # Mesmo strand, não é intergênico
-                                matched = True
-                                break
-                # If there is no match with any CDS, it is intergenic
-                if not matched:
-                    #print(tra_chr, tra_coordi, tra_coordf, tra_strand, tra_length, "intergenic")
+                                overlap_diff_strand = True
+                            else: 
+                                overlap_same_strand = True
+
+                # Keep it (only if all overlays are with different strands)
+                if overlap_diff_strand and not overlap_same_strand:
                     fh_ncRNA.write(f"{tra_chr}\t{tra_coordi}\t{tra_coordf}\t{tra_i}\t.\t{tra_strand}\t{tra_length}\n")
-                    i += 1
+                elif not overlap_diff_strand and not overlap_same_strand:
+                # It does not overlap with any CDS → it is an intergenic lncRNA.
+                    fh_ncRNA.write(f"{tra_chr}\t{tra_coordi}\t{tra_coordf}\t{tra_i}\t.\t{tra_strand}\t{tra_length}\n")
 
 # Import INPUT files
 if __name__ == "__main__":
