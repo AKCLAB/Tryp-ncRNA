@@ -104,9 +104,9 @@ while IFS= read -r subdir; do
     echo "${output_folder}"
     name_samples=()
     # Loop for all samples
-    for fastq_file in "${subdir}"/*1.fastq.gz; do
+    for fastq_file in "${subdir}"/*_1.fastq.gz; do
         #Nome do arquivo .fastq (sem a extensão)
-        fastq_name=$(basename "$fastq_file" 1.fastq.gz)
+        fastq_name=$(basename "$fastq_file" _1.fastq.gz)
         name_samples+=("$fastq_name")
     done
     echo "${name_samples}"
