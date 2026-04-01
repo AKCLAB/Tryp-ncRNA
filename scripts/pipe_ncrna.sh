@@ -198,7 +198,7 @@ while IFS= read -r subdir; do
     echo "Annotation transcript at sense and location"
 
     echo "Running bedtools getfasta to extract fasta sequences"
-    bedtools getfasta -fi "$fasta" -bed "${output_folder}/ncRNAs_location_direction.bed" -fo "${output_folder}/all_ncrna.fasta" -name+
+    bedtools getfasta -fi "$fasta" -bed "${output_folder}/ncRNAs_location_direction.bed" -fo "${output_folder}/all_ncrna.fasta" -name
     echo "Extracted fasta sequences"
 
     echo "Running diamond blastx"
