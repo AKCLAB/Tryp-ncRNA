@@ -170,7 +170,7 @@ while IFS= read -r subdir; do
     echo "File picard successfully"
 
     echo "Running igvtools"
-    igvtools count --strands second --windowSize 1 "${output_folder}/transcript_all.sorted.merged_files.bam" "${output_folder}/count_igv.wig,count_igv.tdf" "$fasta"
+    igvtools count --strands first --windowSize 1 "${output_folder}/transcript_all.sorted.merged_files.bam" "${output_folder}/count_igv.wig,count_igv.tdf" "$fasta"
     echo "File igvtools successfully"
 
     echo "Running 2_identify_transcript.py"
