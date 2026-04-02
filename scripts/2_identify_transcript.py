@@ -39,8 +39,8 @@ def process_file(file, threshold, fh2, out_file):
             if len(fields) < 3:  # Ensure there are enough columns
                 continue
             coord = fields[0]
-            qtd_pos = float(fields[1])  # Column for "pos"
-            qtd_neg = float(fields[2])  # Column for "neg"
+            qtd_neg = float(fields[1])  # Column for "pos" "SEQUENCING FIRST"
+            qtd_pos = float(fields[2])  # Column for "neg"
             # Process positive strand
             if qtd_pos >= threshold and start_pos == 0:
                 start_pos = 1
