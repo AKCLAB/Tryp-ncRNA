@@ -1,7 +1,7 @@
 import sys
 import re
 #command: python 3_identify_possible_ncRNA_lncRNA.py transcript_100cov.txt transcript_50cov.txt possible_ncRNA.txt possible_lncRNA.txt
-i = 1  # numeral do ncRNA
+#i = 1  # numeral do ncRNA
 #out_file = "possible_ncRNA.txt" # output file for small ncRNA
 #out_file2 = "possible_lncRNA.txt"  # output file for large ncRNA
 
@@ -41,3 +41,4 @@ if __name__ == "__main__":
     out_file = sys.argv[3]
     out_file2 = sys.argv[4]
     process_file(transcript_100, transcript_50, out_file, out_file2)
+

@@ -169,6 +169,9 @@ while IFS= read -r subdir; do
     fi
     echo "File picard successfully"
 
+    samtools index "${output_folder}/transcript_all.sorted.merged_files.bam"
+    echo "samtools index successfully"
+
     echo "Running igvtools"
     igvtools count --strands first --windowSize 1 "${output_folder}/transcript_all.sorted.merged_files.bam" "${output_folder}/count_igv.wig,count_igv.tdf" "$fasta"
     echo "File igvtools successfully"
@@ -198,11 +201,11 @@ while IFS= read -r subdir; do
     echo "Annotation transcript at sense and location"
 
     echo "Running bedtools getfasta to extract fasta sequences"
-    bedtools getfasta -fi "$fasta" -bed "${output_folder}/ncRNAs_location_direction.bed" -fo "${output_folder}/all_ncrna.fasta" -name
+    bedtools getfasta -fi "$fasta" -bed "${output_folder}/ncRNAs_location_direction.bed" -fo "${output_folder}/all_ncrna.fasta" -s -name
     echo "Extracted fasta sequences"
 
     echo "Running diamond blastx"
-    diamond blastx --query "${output_folder}/all_ncrna.fasta" --db "${database}/pfam_database.dmnd" --out "${output_folder}/ncrna_pfam-cov80-max1.tab" --outfmt 6 qseqid sseqid pident qcovhsp length qlen slen qstart qend sstart send evalue bitscore stitle --id 90 --query-cover 80 --evalue 1e-5 --threads "$threads" --max-target-seqs 1
+    diamond blastx --query "${output_folder}/all_ncrna.fasta" --db "${database}/pfam_database.dmnd" --out "${output_folder}/ncrna_pfam-cov80-max1.tab" --outfmt 6 qseqid sseqid pident qcovhsp length qlen slen qstart qend sstart send evalue bitscore stitle --id 30 --evalue 1e-6 --threads "$threads" --max-target-seqs 1
     echo "diamond blastx done successefully"
 
     echo "Final selection of ncRNA"
@@ -233,7 +236,7 @@ echo "Create bed, tab and gff output files"
 python3 9_remake_output.py "${output_base}/unique_sort_allncrna.tab" "${output_base}/df_allncrna.tab" "${output_base}/df_allncrna.bed" "${output_base}/df_allncrna.gff"
 
 echo "Extract ncRNA sequences"
-bedtools getfasta -fi "$fasta" -bed "${output_base}/df_allncrna.bed" -fo "${output_base}/fasta_ncrna.fasta" -name+
+bedtools getfasta -fi "$fasta" -bed "${output_base}/df_allncrna.bed" -fo "${output_base}/fasta_ncrna.fasta" -s -name+
 echo "Extracted fasta sequences"
 
 # Check if there is the dir_tool diretory
@@ -266,3 +269,16 @@ echo "successfully RNAcon run"
 echo "Run processing PORTRAIT & ptRNApred1 & tRNAscan & snoscan & RNAcon"
 python3 "${path_script}/10_postprocessing_ncrna.py" "${output_base}/df_allncrna.tab" "${output_base}/fasta_ncrna.fasta_results_all.scores" "${output_base}/output_ptrnapred1.txt" "${output_base}/tRNAscan-output.tab" "${output_base}/output_snoscan.txt" "${output_base}/output_rnacon.txt" "${output_base}/df_allncrna_final.tab"
 echo "Congratulations, we have successfully succeeded in your non-coding RNA!"
+
+usage() {
+    echo "Usage: ..."
+    exit 1
+}
+
+# Start logging everything
+exec > >(tee -a pipeline.log) 2>&1
+
+# Parse command-line arguments
+while [[ $# -gt 0 ]]; do
+    ...
+done

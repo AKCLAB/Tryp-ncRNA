@@ -6,7 +6,7 @@ import argparse
 i_pos = 0  # Counter for positive strand transcripts
 i_neg = 0  # Counter for negative strand transcripts
 
-def process_file(file, threshold, fh2, out_file):
+def process_file(file, threshold, fh2):
     global i_pos, i_neg
 
     with open(file, 'r') as fh:
@@ -45,7 +45,6 @@ def process_file(file, threshold, fh2, out_file):
             if qtd_pos >= threshold and start_pos == 0:
                 start_pos = 1
                 coordi_pos = coord  # Save start coordinate
-
                 i_pos += 1
             elif start_pos == 1 and qtd_pos < threshold:
                 fh2.write(f"ncRNA{i_pos}\t{chr}\t{coordi_pos}\t{prev_coord}\t+\t{threshold}\n")
@@ -93,4 +92,4 @@ if __name__ == "__main__":
         out_file = f"{output_directory}transcript_{threshold}cov.txt"
         with open(out_file, 'w') as fh2:
             # Process the file with the given threshold
-            process_file(args.file, threshold, fh2, out_file)
+            process_file(args.file, threshold, fh2)
