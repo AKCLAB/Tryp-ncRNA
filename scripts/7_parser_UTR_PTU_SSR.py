@@ -30,7 +30,7 @@ def process_file(ncrna, lcrna, ptu, ssr, out_file, gff, sl=None, polya=None):
         #ptus_lines = file3.readlines() #reads from policistronic coordenates lines
         sense_lines = file3.readlines() + file6.readlines() #reads from policistronic coordenates lines
     utr5_lines = []
-    #utr3_lines = []
+    utr3_lines = []
 
     if sl:
         with open(sl, 'r') as file4: # read leader sequence and polya position
