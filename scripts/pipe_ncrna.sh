@@ -269,16 +269,3 @@ echo "successfully RNAcon run"
 echo "Run processing PORTRAIT & ptRNApred1 & tRNAscan & snoscan & RNAcon"
 python3 "${path_script}/10_postprocessing_ncrna.py" "${output_base}/df_allncrna.tab" "${output_base}/fasta_ncrna.fasta_results_all.scores" "${output_base}/output_ptrnapred1.txt" "${output_base}/tRNAscan-output.tab" "${output_base}/output_snoscan.txt" "${output_base}/output_rnacon.txt" "${output_base}/df_allncrna_final.tab"
 echo "Congratulations, we have successfully succeeded in your non-coding RNA!"
-
-usage() {
-    echo "Usage: ..."
-    exit 1
-}
-
-# Start logging everything
-exec > >(tee -a pipeline.log) 2>&1
-
-# Parse command-line arguments
-while [[ $# -gt 0 ]]; do
-    ...
-done
