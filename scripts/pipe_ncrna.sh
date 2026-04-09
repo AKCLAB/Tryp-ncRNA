@@ -205,7 +205,7 @@ while IFS= read -r subdir; do
     echo "Extracted fasta sequences"
 
     echo "Running diamond blastx"
-    diamond blastx --query "${output_folder}/all_ncrna.fasta" --db "${database}/pfam_database.dmnd" --out "${output_folder}/ncrna_pfam-cov80-max1.tab" --outfmt 6 qseqid sseqid pident qcovhsp length qlen slen qstart qend sstart send evalue bitscore stitle --id 30 --evalue 1e-6 --threads "$threads" --max-target-seqs 1
+    diamond blastx --query "${output_folder}/all_ncrna.fasta" --db "${database}/pfam_database.dmnd" --out "${output_folder}/ncrna_pfam-cov80-max1.tab" --outfmt 6 qseqid sseqid pident qcovhsp length qlen slen qstart qend sstart send evalue bitscore stitle --id 30 --subject-cover 50 --evalue 1e-6 --threads "$threads" --max-target-seqs 1
     echo "diamond blastx done successefully"
 
     echo "Final selection of ncRNA"
@@ -259,7 +259,7 @@ echo "successfully tRNAscan run"
 echo "Run snoscan"
 #complete ribossomal sequences in all species 
 # Use with manual installation # cd "${dir_tool}/snoscan/snoscan-0.9.1" && ./snoscan "${dir_tool}/snoscan/snoscan-0.9.1/Lb-rRNA.fa" "${output_base}/fasta_ncrna.fasta" > "${output_base}/output_snoscan.txt"
-snoscan "${output_base}/Lb-rRNA.fa" "${output_base}/fasta_ncrna.fasta" > "${output_base}/output_snoscan.txt"
+snoscan "${dir_tool}/snoscan/Lb-rRNA.fa" "${output_base}/fasta_ncrna.fasta" > "${output_base}/output_snoscan.txt"
 echo "successfully snoscan run"
 
 echo "Run rnacon"

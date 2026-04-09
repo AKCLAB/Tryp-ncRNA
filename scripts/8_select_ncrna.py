@@ -18,7 +18,7 @@ def process_file(ncrna_file, blast_tab, final_ncrna):
 
     #column_removed = pd.read_csv(removed_file, names=["names"]) #list of ncRNA with match in pfam proteins
     blast_pfam = pd.read_csv(blast_tab, sep='\t', names=["query id","subject id","identity","query coverage per subject","alignment length","query length","subject length","q. start","q. end","s. start","s. end","evalue","bit score", "subject title"])
-    
+    blast_pfam["query id"] = blast_pfam["query id"].str.replace(r"\(.*\)$", "", regex=True)
     # From the list all predicted ncRNA remove the included in removed_file
     filtered_df = ncrna[~ncrna['info_ncrna'].isin(blast_pfam["query id"])].copy()
     filtered_df = filtered_df.drop('info_ncrna', axis=1) 
